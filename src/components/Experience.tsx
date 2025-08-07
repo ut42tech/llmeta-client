@@ -1,15 +1,14 @@
+import { charactersAtom, socket } from "@/components/SocketManager";
 import {
   ContactShadows,
   Environment,
   OrbitControls,
   useCursor,
 } from "@react-three/drei";
-
+import { AnimatedWoman } from "@/components/AnimatedWoman";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import * as THREE from "three";
-import { AnimatedWoman } from "./AnimatedWoman";
-import { charactersAtom, socket } from "./SocketManager";
 export const Experience = () => {
   const [characters] = useAtom(charactersAtom);
   const [onFloor, setOnFloor] = useState(false);
