@@ -23,24 +23,36 @@ export const SocketManager = () => {
     function onHello(value: any) {
       setMap(value.map);
       setUser(value.id);
-      setCharacters(value);
+      // value.characters があればそれを、なければ value を fallback
+      setCharacters((value as any).characters ?? value);
     }
 
     function onCharacters(value: any) {
       setCharacters(value);
     }
 
+    function onPlayerMove(value: any) {
+      setCharacters((prev: any) => {
+        return prev.map((character: any) => {
+          if (character.id === value.id) {
+            return value;
+          }
+          return character;
+        });
+      });
+    }
+
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("hello", onHello);
     socket.on("characters", onCharacters);
+    socket.on("playerMove", onPlayerMove);
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("hello", onHello);
       socket.off("characters", onCharacters);
+      socket.off("playerMove", onPlayerMove);
     };
   }, []);
-
-  return null;
 };
