@@ -1,16 +1,14 @@
-import { charactersAtom, socket } from "@/components/SocketManager";
-import {
-  ContactShadows,
-  Environment,
-  OrbitControls,
-  useCursor,
-} from "@react-three/drei";
-import { AnimatedWoman } from "@/components/AnimatedWoman";
+import { Environment, Grid, OrbitControls, useCursor } from "@react-three/drei";
+
 import { useAtom } from "jotai";
 import { useState } from "react";
 import * as THREE from "three";
+import { AnimatedWoman } from "./AnimatedWoman";
+import { Item } from "./Item";
+import { charactersAtom, mapAtom, socket } from "./SocketManager";
 export const Experience = () => {
   const [characters] = useAtom(charactersAtom);
+  const [map] = useAtom(mapAtom);
   const [onFloor, setOnFloor] = useState(false);
   useCursor(onFloor);
 
@@ -18,21 +16,28 @@ export const Experience = () => {
     <>
       <Environment preset="sunset" />
       <ambientLight intensity={0.3} />
-      <ContactShadows blur={2} />
       <OrbitControls />
+
+      {map.items.map((item, idx) => (
+        <Item key={`${item.name}-${idx}`} item={item} />
+      ))}
       <mesh
         rotation-x={-Math.PI / 2}
-        position-y={-0.001}
+        position-y={-0.002}
         onClick={(e) => socket.emit("move", [e.point.x, 0, e.point.z])}
         onPointerEnter={() => setOnFloor(true)}
         onPointerLeave={() => setOnFloor(false)}
+        position-x={map.size[0] / 2}
+        position-z={map.size[1] / 2}
       >
-        <planeGeometry args={[10, 10]} />
+        <planeGeometry args={map.size} />
         <meshStandardMaterial color="#f0f0f0" />
       </mesh>
-      {characters.map((character: any) => (
+      <Grid infiniteGrid fadeDistance={50} fadeStrength={5} />
+      {characters.map((character) => (
         <AnimatedWoman
           key={character.id}
+          id={character.id}
           position={
             new THREE.Vector3(
               character.position[0],
