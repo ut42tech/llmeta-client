@@ -1,7 +1,7 @@
 "use client";
 
 import { Environment, Grid, OrbitControls, useCursor } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, ThreeEvent, useThree } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { useMemo, useState } from "react";
 import { AnimatedWoman } from "./AnimatedWoman";
@@ -16,10 +16,9 @@ export function ExperienceColyseus() {
   useCursor(onFloor);
 
   const playerList = useMemo(() => Object.values(players), [players]);
-  const { scene } = useThree((state) => state);
+  useThree();
 
-  const onGroundClick = (e) => {
-    // 自分のキャラが存在するときだけ移動
+  const onGroundClick = (e: ThreeEvent<MouseEvent>) => {
     if (!sessionId) return;
     const target = e.point;
     sendPose(room, { x: target.x, y: 0, z: target.z });
@@ -44,11 +43,10 @@ export function ExperienceColyseus() {
       </mesh>
       <Grid infiniteGrid fadeDistance={50} fadeStrength={5} />
 
-      {playerList.map((p) => (
+      {playerList.map((p: any) => (
         <AnimatedWoman
           key={p.id}
           id={p.id}
-          // サーバー座標を直接使う
           serverPosition={[p.x, p.y, p.z]}
           follow={p.id === sessionId}
           hairColor={p.id === sessionId ? "#2e90ff" : "#7c3aed"}

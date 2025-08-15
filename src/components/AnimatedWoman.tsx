@@ -6,6 +6,8 @@ Originally generated with:
 Adapted to support Colyseus-driven serverPosition updates and optional camera follow.
 */
 
+"use client";
+
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame, useGraph } from "@react-three/fiber";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -14,62 +16,97 @@ import * as THREE from "three";
 
 const MOVEMENT_SPEED = 0.032;
 
-export function AnimatedWoman({
-  hairColor = "green",
-  topColor = "pink",
-  bottomColor = "brown",
-  id,
-  // Colyseusからのサーバー座標 [x, y, z]
-  serverPosition,
+type GroupProps = { position?: any; [key: string]: any };
+
+type ActionName =
+  | "CharacterArmature|Death"
+  | "CharacterArmature|Gun_Shoot"
+  | "CharacterArmature|HitRecieve"
+  | "CharacterArmature|HitRecieve_2"
+  | "CharacterArmature|Idle"
+  | "CharacterArmature|Idle_Gun"
+  | "CharacterArmature|Idle_Gun_Pointing"
+  | "CharacterArmature|Idle_Gun_Shoot"
+  | "CharacterArmature|Idle_Neutral"
+  | "CharacterArmature|Idle_Sword"
+  | "CharacterArmature|Interact"
+  | "CharacterArmature|Kick_Left"
+  | "CharacterArmature|Kick_Right"
+  | "CharacterArmature|Punch_Left"
+  | "CharacterArmature|Punch_Right"
+  | "CharacterArmature|Roll"
+  | "CharacterArmature|Run"
+  | "CharacterArmature|Run_Back"
+  | "CharacterArmature|Run_Left"
+  | "CharacterArmature|Run_Right"
+  | "CharacterArmature|Run_Shoot"
+  | "CharacterArmature|Sword_Slash"
+  | "CharacterArmature|Walk"
+  | "CharacterArmature|Wave";
+
+export interface AnimatedWomanProps extends GroupProps {
+  id: string;
+  // Colyseus からのサーバー座標 [x, y, z]
+  serverPosition?: [number, number, number];
   // ローカルカメラ追従
+  follow?: boolean;
+}
+
+export function AnimatedWoman({
+  id,
+  serverPosition,
   follow = false,
   ...props
-}) {
+}: AnimatedWomanProps) {
   const initialPosition = useMemo(() => {
     if (Array.isArray(serverPosition))
       return new THREE.Vector3(...serverPosition);
-    if (Array.isArray(props.position))
-      return new THREE.Vector3(...props.position);
-    return props.position; // allow Vector3
-  }, [props.position, serverPosition]);
-  const [target, setTarget] = useState(
-    () => initialPosition?.clone?.() || new THREE.Vector3()
+    if (Array.isArray((props as any).position))
+      return new THREE.Vector3(...((props as any).position as number[]));
+    return (props as any).position; // allow Vector3
+  }, [(props as any).position, serverPosition]);
+
+  const [target, setTarget] = useState<THREE.Vector3>(
+    () => (initialPosition as THREE.Vector3)?.clone?.() || new THREE.Vector3()
   );
 
-  const group = useRef();
+  const group = useRef<THREE.Group>(null);
   const { scene, materials, animations } = useGLTF(
     "/models/Animated Woman.glb"
-  );
+  ) as unknown as {
+    scene: THREE.Object3D;
+    materials: Record<string, THREE.Material>;
+    animations: THREE.AnimationClip[];
+  };
   // Skinned meshes cannot be re-used in threejs without cloning them
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   // useGraph creates two flat object collections for nodes and materials
-  const { nodes } = useGraph(clone);
+  const { nodes } = useGraph(clone) as unknown as {
+    nodes: Record<string, any>;
+  };
 
   const { actions } = useAnimations(animations, group);
-  const [animation, setAnimation] = useState("CharacterArmature|Idle");
+  const [animation, setAnimation] = useState<ActionName>(
+    "CharacterArmature|Idle"
+  );
 
   useEffect(() => {
-    actions[animation].reset().fadeIn(0.32).play();
-    return () => actions[animation]?.fadeOut(0.32);
-  }, [animation]);
+    const act = actions[animation];
+    act?.reset();
+    act?.fadeIn(0.32);
+    act?.play();
+    return () => {
+      act?.fadeOut(0.32);
+    };
+  }, [actions, animation]);
 
   // サーバーからの最新位置をターゲットとして保持
   useEffect(() => {
     if (Array.isArray(serverPosition)) {
-      setTarget(
-        new THREE.Vector3(
-          serverPosition[0],
-          serverPosition[1],
-          serverPosition[2]
-        )
-      );
+      setTarget(new THREE.Vector3(...serverPosition));
       // 初回はスナップ
       if (group.current && group.current.position.lengthSq() === 0) {
-        group.current.position.set(
-          serverPosition[0],
-          serverPosition[1],
-          serverPosition[2]
-        );
+        group.current.position.set(...serverPosition);
       }
     }
   }, [serverPosition]);
@@ -100,13 +137,7 @@ export function AnimatedWoman({
   });
 
   return (
-    <group
-      ref={group}
-      {...props}
-      position={initialPosition}
-      dispose={null}
-      name={`character-${id}`}
-    >
+    <group ref={group} {...props} dispose={null}>
       <group name="Root_Scene">
         <group name="RootNode">
           <group
@@ -122,9 +153,7 @@ export function AnimatedWoman({
               geometry={nodes.Casual_Body_1.geometry}
               material={materials.White}
               skeleton={nodes.Casual_Body_1.skeleton}
-            >
-              <meshStandardMaterial color={topColor} />
-            </skinnedMesh>
+            />
             <skinnedMesh
               name="Casual_Body_2"
               geometry={nodes.Casual_Body_2.geometry}
@@ -158,9 +187,7 @@ export function AnimatedWoman({
               geometry={nodes.Casual_Head_2.geometry}
               material={materials.Hair_Blond}
               skeleton={nodes.Casual_Head_2.skeleton}
-            >
-              <meshStandardMaterial color={hairColor} />
-            </skinnedMesh>
+            />
             <skinnedMesh
               name="Casual_Head_3"
               geometry={nodes.Casual_Head_3.geometry}
@@ -181,9 +208,7 @@ export function AnimatedWoman({
             skeleton={nodes.Casual_Legs.skeleton}
             rotation={[-Math.PI / 2, 0, 0]}
             scale={100}
-          >
-            <meshStandardMaterial color={bottomColor} />
-          </skinnedMesh>
+          />
         </group>
       </group>
     </group>
