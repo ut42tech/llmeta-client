@@ -1,3 +1,4 @@
+import { SnapRotateXROrigin } from "@/components/SnapRotateXROrigin";
 import { Sky } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
@@ -7,12 +8,14 @@ import {
   PointerLockInput,
   PrototypeBox,
   SimpleCharacter,
+  useXRControllerInput,
 } from "@react-three/viverse";
 import { useRef } from "react";
 import { Group } from "three";
 
 export const DemoScene = () => {
   const characterRef = useRef<Group>(null);
+  const input = useXRControllerInput();
 
   // Respawn logic - NEW
   useFrame(() => {
@@ -36,8 +39,10 @@ export const DemoScene = () => {
         ref={characterRef}
         model={false}
         cameraBehavior={FirstPersonCharacterCameraBehavior}
-        input={[LocomotionKeyboardInput, PointerLockInput]}
-      />
+        input={[LocomotionKeyboardInput, PointerLockInput, input]}
+      >
+        <SnapRotateXROrigin />
+      </SimpleCharacter>
 
       <BvhPhysicsBody>
         <PrototypeBox
