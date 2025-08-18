@@ -1,11 +1,25 @@
 import { Sky } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import {
   BvhPhysicsBody,
   PrototypeBox,
   SimpleCharacter,
 } from "@react-three/viverse";
+import { useRef } from "react";
+import { Group } from "three";
 
 export const DemoScene = () => {
+  const characterRef = useRef<Group>(null);
+
+  // Respawn logic - NEW
+  useFrame(() => {
+    if (characterRef.current == null) {
+      return;
+    }
+    if (characterRef.current.position.y < -10) {
+      characterRef.current.position.set(0, 0, 0);
+    }
+  });
   return (
     <>
       {/* Environment */}
@@ -15,7 +29,7 @@ export const DemoScene = () => {
       <directionalLight intensity={1.2} position={[5, 10, 10]} castShadow />
       <ambientLight intensity={1} />
 
-      <SimpleCharacter />
+      <SimpleCharacter ref={characterRef} />
 
       <BvhPhysicsBody>
         <PrototypeBox
