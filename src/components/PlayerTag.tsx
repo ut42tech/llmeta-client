@@ -1,13 +1,12 @@
 import { useFrame } from "@react-three/fiber";
-import { Image, Root, Text } from "@react-three/uikit";
+import { FontFamilyProvider, Root, Text } from "@react-three/uikit";
 import { useViverseProfile } from "@react-three/viverse";
 import { useRef } from "react";
 import { Group } from "three";
 
 export const PlayerTag = () => {
   const profile = useViverseProfile() ?? {
-    name: "Anonymous",
-    activeAvatar: { headIconUrl: "https://picsum.photos/200" },
+    name: "日本語テスト",
   };
 
   const ref = useRef<Group>(null);
@@ -21,29 +20,29 @@ export const PlayerTag = () => {
   });
 
   return (
-    <group ref={ref} position-y={2.15}>
-      <Root
-        depthTest={false}
-        renderOrder={1}
-        backgroundOpacity={0.5}
-        borderRadius={10}
-        paddingX={2}
-        height={20}
-        backgroundColor="white"
-        flexDirection="row"
-        alignItems="center"
-        gap={4}
-      >
-        <Image
-          width={16}
-          height={16}
-          borderRadius={14}
-          src={profile.activeAvatar?.headIconUrl}
-        />
-        <Text fontWeight="bold" fontSize={12} marginRight={3}>
-          {profile.name}
-        </Text>
-      </Root>
-    </group>
+    <FontFamilyProvider
+      notoSans={{
+        bold: "fonts/NotoSansJP-Bold.json",
+      }}
+    >
+      <group ref={ref} position-y={2.15}>
+        <Root
+          depthTest={false}
+          renderOrder={1}
+          backgroundOpacity={0.5}
+          borderRadius={10}
+          paddingX={4}
+          height={20}
+          backgroundColor="white"
+          flexDirection="row"
+          alignItems="center"
+          gap={4}
+        >
+          <Text fontFamily="notoSans" fontWeight="bold" fontSize={8}>
+            {profile.name}
+          </Text>
+        </Root>
+      </group>
+    </FontFamilyProvider>
   );
 };

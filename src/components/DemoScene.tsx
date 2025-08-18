@@ -1,3 +1,5 @@
+"use client";
+
 import { PlayerTag } from "@/components/PlayerTag";
 import { Sky } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
