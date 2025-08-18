@@ -8,6 +8,7 @@ export const DemoCanvas = () => {
     <Canvas
       style={{ position: "absolute", inset: "0", touchAction: "none" }}
       camera={{ fov: 90, position: [0, 2, 2] }}
+      onClick={(e) => (e.target as HTMLElement).requestPointerLock()}
       shadows
     >
       <Suspense fallback={null}>

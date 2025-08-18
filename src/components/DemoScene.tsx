@@ -2,6 +2,9 @@ import { Sky } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
   BvhPhysicsBody,
+  FirstPersonCharacterCameraBehavior,
+  LocomotionKeyboardInput,
+  PointerLockInput,
   PrototypeBox,
   SimpleCharacter,
 } from "@react-three/viverse";
@@ -29,7 +32,12 @@ export const DemoScene = () => {
       <directionalLight intensity={1.2} position={[5, 10, 10]} castShadow />
       <ambientLight intensity={1} />
 
-      <SimpleCharacter ref={characterRef} />
+      <SimpleCharacter
+        ref={characterRef}
+        model={false}
+        cameraBehavior={FirstPersonCharacterCameraBehavior}
+        input={[LocomotionKeyboardInput, PointerLockInput]}
+      />
 
       <BvhPhysicsBody>
         <PrototypeBox
