@@ -2,6 +2,7 @@
 
 import { DemoScene } from "@/components/DemoScene";
 import { Canvas } from "@react-three/fiber";
+import { FontFamilyProvider } from "@react-three/uikit";
 import { BvhPhysicsWorld } from "@react-three/viverse";
 import { Suspense } from "react";
 
@@ -15,7 +16,13 @@ export const DemoCanvas = () => {
     >
       <Suspense fallback={null}>
         <BvhPhysicsWorld>
-          <DemoScene />
+          <FontFamilyProvider
+            notoSans={{
+              bold: "fonts/NotoSansJP-Bold.json",
+            }}
+          >
+            <DemoScene />
+          </FontFamilyProvider>
         </BvhPhysicsWorld>
       </Suspense>
     </Canvas>
