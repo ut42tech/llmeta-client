@@ -1,5 +1,9 @@
 import { Sky } from "@react-three/drei";
-import { BvhPhysicsBody, PrototypeBox } from "@react-three/viverse";
+import {
+  BvhPhysicsBody,
+  PrototypeBox,
+  SimpleCharacter,
+} from "@react-three/viverse";
 
 export const DemoScene = () => {
   return (
@@ -10,6 +14,8 @@ export const DemoScene = () => {
       {/* Lighting - expanded with shadow settings */}
       <directionalLight intensity={1.2} position={[5, 10, 10]} castShadow />
       <ambientLight intensity={1} />
+
+      <SimpleCharacter />
 
       <BvhPhysicsBody>
         <PrototypeBox
