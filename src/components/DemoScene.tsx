@@ -1,3 +1,4 @@
+import { PlayerTag } from "@/components/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/SnapRotateXROrigin";
 import { Sky } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
@@ -42,6 +43,7 @@ export const DemoScene = () => {
         input={[LocomotionKeyboardInput, PointerLockInput, input]}
       >
         <SnapRotateXROrigin />
+        <PlayerTag />
       </SimpleCharacter>
 
       <BvhPhysicsBody>
