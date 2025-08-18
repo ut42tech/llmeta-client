@@ -1,5 +1,3 @@
-"use client";
-
 import { DemoCanvas } from "@/components/DemoCanvas";
 
 export default function Home() {
