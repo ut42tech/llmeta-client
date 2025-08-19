@@ -3,7 +3,7 @@
 import { MainLevel } from "@/components/MainLevel";
 import { PlayerTag } from "@/components/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/SnapRotateXROrigin";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { SimpleCharacter, useXRControllerInput } from "@react-three/viverse";
 import { useCallback, useRef } from "react";
