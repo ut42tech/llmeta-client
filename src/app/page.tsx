@@ -1,9 +1,9 @@
-import { DemoCanvas } from "@/components/DemoCanvas";
+import { MainCanvas } from "@/components/MainCanvas";
 
 export default function Home() {
   return (
     <div className="h-screen w-screen">
-      <DemoCanvas />
+      <MainCanvas />
     </div>
   );
 }

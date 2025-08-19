@@ -2,7 +2,7 @@
 
 import { PlayerTag } from "@/components/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/SnapRotateXROrigin";
-import { Sky } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, Sky } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
   BvhPhysicsBody,
@@ -14,7 +14,7 @@ import { TeleportTarget } from "@react-three/xr";
 import { useCallback, useRef } from "react";
 import { Group, Vector3 } from "three";
 
-export const DemoScene = () => {
+export const MainScene = () => {
   const characterRef = useRef<Group>(null);
   const input = useXRControllerInput();
 
@@ -34,6 +34,8 @@ export const DemoScene = () => {
   });
   return (
     <>
+      <PerspectiveCamera makeDefault position={[-5, 5, 5]} fov={50} />
+      <OrbitControls />
       {/* Environment */}
       <Sky />
 

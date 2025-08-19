@@ -1,6 +1,6 @@
 "use client";
 
-import { DemoScene } from "@/components/DemoScene";
+import { MainScene } from "@/components/MainScene";
 import { Canvas } from "@react-three/fiber";
 import { FontFamilyProvider } from "@react-three/uikit";
 import { BvhPhysicsWorld } from "@react-three/viverse";
@@ -13,11 +13,10 @@ const store = createXRStore({
   controller: { teleportPointer: true },
 });
 
-export const DemoCanvas = () => {
+export const MainCanvas = () => {
   return (
     <Canvas
       className="!fixed !w-screen !h-screen"
-      camera={{ fov: 90, position: [0, 2, 2] }}
       shadows
       gl={{ antialias: true, localClippingEnabled: true }}
     >
@@ -29,7 +28,7 @@ export const DemoCanvas = () => {
             }}
           >
             <XR store={store}>
-              <DemoScene />
+              <MainScene />
             </XR>
           </FontFamilyProvider>
         </BvhPhysicsWorld>
