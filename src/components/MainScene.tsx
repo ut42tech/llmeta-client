@@ -29,8 +29,12 @@ export const MainScene = () => {
   });
   return (
     <>
-      <PerspectiveCamera makeDefault position={[-5, 5, 5]} fov={50} />
-      <OrbitControls />
+      <PerspectiveCamera
+        makeDefault
+        position={[-10, 10 * Math.SQRT2, 10]}
+        fov={45}
+        onUpdate={(cam) => cam.lookAt(0, 0, 0)}
+      />
 
       <SimpleCharacter
         input={[input]}
