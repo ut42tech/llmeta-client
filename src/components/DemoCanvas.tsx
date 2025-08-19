@@ -7,7 +7,11 @@ import { BvhPhysicsWorld } from "@react-three/viverse";
 import { createXRStore, XR } from "@react-three/xr";
 import { Suspense } from "react";
 
-const store = createXRStore({ offerSession: "immersive-vr" });
+const store = createXRStore({
+  offerSession: "immersive-vr",
+  hand: { teleportPointer: true },
+  controller: { teleportPointer: true },
+});
 
 export const DemoCanvas = () => {
   return (

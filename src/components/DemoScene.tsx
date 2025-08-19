@@ -10,12 +10,14 @@ import {
   SimpleCharacter,
   useXRControllerInput,
 } from "@react-three/viverse";
-import { useRef } from "react";
-import { Group } from "three";
+import { TeleportTarget } from "@react-three/xr";
+import { useRef, useState } from "react";
+import { Group, Vector3 } from "three";
 
 export const DemoScene = () => {
   const characterRef = useRef<Group>(null);
   const input = useXRControllerInput();
+  const [position, setPosition] = useState(new Vector3(0, 0, 0));
 
   // Respawn logic - NEW
   useFrame(() => {
@@ -41,41 +43,51 @@ export const DemoScene = () => {
         model={false}
         ref={characterRef}
       >
-        <SnapRotateXROrigin />
+        <SnapRotateXROrigin position={position} />
         <PlayerTag />
       </SimpleCharacter>
 
-      <BvhPhysicsBody>
-        <PrototypeBox
-          color="#ffffff"
-          scale={[10, 0.5, 10]}
-          position={[0, -2, 0]}
-        />
+      <TeleportTarget onTeleport={setPosition}>
+        <BvhPhysicsBody>
+          <PrototypeBox
+            color="#ffffff"
+            scale={[10, 0.5, 10]}
+            position={[0, -2, 0]}
+          />
 
-        {/* Platforms */}
-        <PrototypeBox color="#cccccc" scale={[2, 1, 3]} position={[4, 0, 0]} />
-        <PrototypeBox
-          color="#ffccff"
-          scale={[3, 1, 3]}
-          position={[3, 1.5, -1]}
-        />
-        <PrototypeBox
-          color="#ccffff"
-          scale={[2, 0.5, 3]}
-          position={[2, 2.5, -3]}
-        />
-        <PrototypeBox
-          color="#ffccff"
-          scale={[2, 1, 3]}
-          position={[-3, 0, -2]}
-        />
-        <PrototypeBox color="#ccffff" scale={[1, 1, 4]} position={[0, -1, 0]} />
-        <PrototypeBox
-          color="#ffffcc"
-          scale={[4, 1, 1]}
-          position={[0, 3.5, 0]}
-        />
-      </BvhPhysicsBody>
+          {/* Platforms */}
+          <PrototypeBox
+            color="#cccccc"
+            scale={[2, 1, 3]}
+            position={[4, 0, 0]}
+          />
+          <PrototypeBox
+            color="#ffccff"
+            scale={[3, 1, 3]}
+            position={[3, 1.5, -1]}
+          />
+          <PrototypeBox
+            color="#ccffff"
+            scale={[2, 0.5, 3]}
+            position={[2, 2.5, -3]}
+          />
+          <PrototypeBox
+            color="#ffccff"
+            scale={[2, 1, 3]}
+            position={[-3, 0, -2]}
+          />
+          <PrototypeBox
+            color="#ccffff"
+            scale={[1, 1, 4]}
+            position={[0, -1, 0]}
+          />
+          <PrototypeBox
+            color="#ffffcc"
+            scale={[4, 1, 1]}
+            position={[0, 3.5, 0]}
+          />
+        </BvhPhysicsBody>
+      </TeleportTarget>
     </>
   );
 };
