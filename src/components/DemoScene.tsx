@@ -11,21 +11,25 @@ import {
   useXRControllerInput,
 } from "@react-three/viverse";
 import { TeleportTarget } from "@react-three/xr";
-import { useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { Group, Vector3 } from "three";
 
 export const DemoScene = () => {
   const characterRef = useRef<Group>(null);
   const input = useXRControllerInput();
-  const [position, setPosition] = useState(new Vector3(0, 0, 0));
 
-  // Respawn logic - NEW
+  const setPosition = useCallback((v: Vector3) => {
+    const ref = characterRef.current;
+    if (!ref) return;
+    ref.position.copy(v);
+  }, []);
+
   useFrame(() => {
     if (characterRef.current == null) {
       return;
     }
     if (characterRef.current.position.y < -10) {
-      characterRef.current.position.set(0, 0, 0);
+      setPosition(new Vector3(0, 0, 0));
     }
   });
   return (
@@ -43,7 +47,7 @@ export const DemoScene = () => {
         model={false}
         ref={characterRef}
       >
-        <SnapRotateXROrigin position={position} />
+        <SnapRotateXROrigin />
         <PlayerTag />
       </SimpleCharacter>
 
