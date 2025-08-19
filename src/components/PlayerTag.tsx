@@ -1,11 +1,10 @@
 import { useFrame } from "@react-three/fiber";
 import { Root, Text } from "@react-three/uikit";
-import { useViverseProfile } from "@react-three/viverse";
 import { useRef } from "react";
 import { Group } from "three";
 
 export const PlayerTag = () => {
-  const profile = useViverseProfile() ?? {
+  const profile = {
     name: "日本語テスト",
   };
 
