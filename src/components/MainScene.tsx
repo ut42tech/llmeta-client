@@ -3,10 +3,9 @@
 import { MainLevel } from "@/components/MainLevel";
 import { PlayerTag } from "@/components/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/SnapRotateXROrigin";
-import { OrbitControls, PerspectiveCamera, Sky } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { SimpleCharacter, useXRControllerInput } from "@react-three/viverse";
-import { TeleportTarget } from "@react-three/xr";
 import { useCallback, useRef } from "react";
 import { Group, Vector3 } from "three";
 
@@ -32,12 +31,6 @@ export const MainScene = () => {
     <>
       <PerspectiveCamera makeDefault position={[-5, 5, 5]} fov={50} />
       <OrbitControls />
-      {/* Environment */}
-      <Sky />
-
-      {/* Lighting - expanded with shadow settings */}
-      <directionalLight intensity={1.2} position={[5, 10, 10]} castShadow />
-      <ambientLight intensity={1} />
 
       <SimpleCharacter
         input={[input]}
@@ -49,9 +42,7 @@ export const MainScene = () => {
         <PlayerTag />
       </SimpleCharacter>
 
-      <TeleportTarget onTeleport={setPosition}>
-        <MainLevel />
-      </TeleportTarget>
+      <MainLevel onTeleport={setPosition} />
     </>
   );
 };
