@@ -1,18 +1,21 @@
 "use client";
 
 import { PlayerTag } from "@/components/PlayerTag";
+import { SnapRotateXROrigin } from "@/components/SnapRotateXROrigin";
 import { Sky } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
   BvhPhysicsBody,
   PrototypeBox,
   SimpleCharacter,
+  useXRControllerInput,
 } from "@react-three/viverse";
 import { useRef } from "react";
 import { Group } from "three";
 
 export const DemoScene = () => {
   const characterRef = useRef<Group>(null);
+  const input = useXRControllerInput();
 
   // Respawn logic - NEW
   useFrame(() => {
@@ -32,7 +35,13 @@ export const DemoScene = () => {
       <directionalLight intensity={1.2} position={[5, 10, 10]} castShadow />
       <ambientLight intensity={1} />
 
-      <SimpleCharacter ref={characterRef}>
+      <SimpleCharacter
+        input={[input]}
+        cameraBehavior={false}
+        model={false}
+        ref={characterRef}
+      >
+        <SnapRotateXROrigin />
         <PlayerTag />
       </SimpleCharacter>
 

@@ -4,7 +4,10 @@ import { DemoScene } from "@/components/DemoScene";
 import { Canvas } from "@react-three/fiber";
 import { FontFamilyProvider } from "@react-three/uikit";
 import { BvhPhysicsWorld } from "@react-three/viverse";
+import { createXRStore, XR } from "@react-three/xr";
 import { Suspense } from "react";
+
+const store = createXRStore({ offerSession: "immersive-vr" });
 
 export const DemoCanvas = () => {
   return (
@@ -21,7 +24,9 @@ export const DemoCanvas = () => {
               bold: "fonts/NotoSansJP-Bold.json",
             }}
           >
-            <DemoScene />
+            <XR store={store}>
+              <DemoScene />
+            </XR>
           </FontFamilyProvider>
         </BvhPhysicsWorld>
       </Suspense>
