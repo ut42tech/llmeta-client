@@ -9,8 +9,14 @@ import { Suspense } from "react";
 
 const store = createXRStore({
   offerSession: "immersive-vr",
-  hand: { teleportPointer: true },
-  controller: { teleportPointer: true },
+  hand: {
+    left: { teleportPointer: false },
+    right: { teleportPointer: true },
+  },
+  controller: {
+    left: { teleportPointer: false },
+    right: { teleportPointer: true },
+  },
 });
 
 export const MainCanvas = () => {
