@@ -16,11 +16,11 @@ export const SnapRotateXROrigin = () => {
     );
     if (current < 0 && prev.current >= 0) {
       // Rotate left
-      ref.current.rotation.y += Math.PI / 2;
+      ref.current.rotation.y += Math.PI / 6;
     }
     if (current > 0 && prev.current <= 0) {
       // Rotate right
-      ref.current.rotation.y -= Math.PI / 2;
+      ref.current.rotation.y -= Math.PI / 6;
     }
     prev.current = current;
   });
