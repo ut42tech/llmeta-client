@@ -13,6 +13,9 @@ export const MainLevel = (props: MainLevelProps) => {
   return (
     <>
       <Sky />
+      <Clouds material={THREE.MeshBasicMaterial} position={[4, 15, -8]}>
+        <Cloud segments={30} bounds={[10, 1, 10]} volume={5} color="white" />
+      </Clouds>
 
       {/* Lighting - expanded with shadow settings */}
       <directionalLight intensity={1.2} position={[5, 10, 10]} castShadow />
