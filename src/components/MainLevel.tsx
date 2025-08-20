@@ -20,13 +20,16 @@ export const MainLevel = (props: MainLevelProps) => {
 
       <TeleportTarget onTeleport={props.onTeleport}>
         <BvhPhysicsBody>
-          <PrototypeBox
+          {/* <PrototypeBox
             color="#fafafa"
             scale={[10, 1, 10]}
             position={[0, -1, 0]}
-          />
+          /> */}
           <Physics>
-            <Map position={[0, 0, 0]} model={"models/city_scene_tokyo.glb"} />
+            <Map
+              position={[-3.5, -0.25, -8]}
+              model={"models/city_scene_tokyo.glb"}
+            />
           </Physics>
         </BvhPhysicsBody>
       </TeleportTarget>
