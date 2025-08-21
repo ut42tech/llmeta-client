@@ -3,7 +3,7 @@
 import { MainLevel } from "@/components/MainLevel";
 import { PlayerTag } from "@/components/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/SnapRotateXROrigin";
-import { PerspectiveCamera } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { SimpleCharacter, useXRControllerInput } from "@react-three/viverse";
 import { useCallback, useRef } from "react";
@@ -29,11 +29,18 @@ export const MainScene = () => {
   });
   return (
     <>
+      <OrbitControls
+        autoRotate
+        autoRotateSpeed={1}
+        enableZoom={true}
+        enablePan={true}
+        target={[15, 0, -15]}
+      />
       <PerspectiveCamera
         makeDefault
-        position={[-10, 10 * Math.SQRT2, 10]}
+        position={[-40, 40 * Math.SQRT2, 40]}
         fov={45}
-        onUpdate={(cam) => cam.lookAt(0, 0, 0)}
+        onUpdate={(cam) => cam.lookAt(15, 0, -15)}
       />
 
       <SimpleCharacter
