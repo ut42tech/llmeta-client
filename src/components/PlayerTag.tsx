@@ -5,7 +5,7 @@ import { Group } from "three";
 
 export const PlayerTag = () => {
   const profile = {
-    name: "日本語テスト",
+    name: "プレイヤー",
   };
 
   const ref = useRef<Group>(null);
