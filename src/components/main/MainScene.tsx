@@ -10,23 +10,6 @@ import { useCallback, useRef } from "react";
 import { Group, Vector3 } from "three";
 
 export const MainScene = () => {
-  const characterRef = useRef<Group>(null);
-  const input = useXRControllerInput();
-
-  const setPosition = useCallback((v: Vector3) => {
-    const ref = characterRef.current;
-    if (!ref) return;
-    ref.position.copy(v);
-  }, []);
-
-  useFrame(() => {
-    if (characterRef.current == null) {
-      return;
-    }
-    if (characterRef.current.position.y < -10) {
-      setPosition(new Vector3(0, 0, 0));
-    }
-  });
   return (
     <>
       <OrbitControls
@@ -43,17 +26,7 @@ export const MainScene = () => {
         onUpdate={(cam) => cam.lookAt(15, 0, -15)}
       />
 
-      <SimpleCharacter
-        input={[input]}
-        cameraBehavior={false}
-        model={false}
-        ref={characterRef}
-      >
-        <SnapRotateXROrigin />
-        <PlayerTag />
-      </SimpleCharacter>
-
-      <Level onTeleport={setPosition} />
+      <Level />
     </>
   );
 };

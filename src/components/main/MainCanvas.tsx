@@ -2,22 +2,8 @@
 
 import { MainScene } from "@/components/main/MainScene";
 import { Canvas } from "@react-three/fiber";
-import { FontFamilyProvider } from "@react-three/uikit";
 import { BvhPhysicsWorld } from "@react-three/viverse";
-import { createXRStore, XR } from "@react-three/xr";
 import { Suspense } from "react";
-
-const store = createXRStore({
-  offerSession: "immersive-vr",
-  hand: {
-    left: { teleportPointer: false },
-    right: { teleportPointer: true },
-  },
-  controller: {
-    left: { teleportPointer: false },
-    right: { teleportPointer: true },
-  },
-});
 
 export const MainCanvas = () => {
   return (
@@ -28,15 +14,7 @@ export const MainCanvas = () => {
     >
       <Suspense fallback={null}>
         <BvhPhysicsWorld>
-          <FontFamilyProvider
-            notoSans={{
-              bold: "fonts/NotoSansJP-Bold.json",
-            }}
-          >
-            <XR store={store}>
-              <MainScene />
-            </XR>
-          </FontFamilyProvider>
+          <MainScene />
         </BvhPhysicsWorld>
       </Suspense>
     </Canvas>
