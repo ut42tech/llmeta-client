@@ -1,11 +1,5 @@
 import { Map } from "@/components/Map";
-import {
-  Cloud,
-  Clouds,
-  Environment,
-  Sky,
-  SoftShadows,
-} from "@react-three/drei";
+import { Cloud, Clouds, Environment, Sky } from "@react-three/drei";
 import { Bloom, EffectComposer, SMAA, SSAO } from "@react-three/postprocessing";
 import { Physics } from "@react-three/rapier";
 import { BvhPhysicsBody, PrototypeBox } from "@react-three/viverse";
@@ -28,8 +22,6 @@ export const MainLevel = (props: MainLevelProps) => {
       </Clouds>
 
       {/* Lighting - expanded with shadow settings */}
-      <SoftShadows />
-      {/* Main sun light with wide shadow camera to cover large maps */}
       <directionalLight
         castShadow
         position={[50, 80, 50]}
