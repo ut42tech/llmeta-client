@@ -39,7 +39,7 @@ export const MainScene = () => {
       <PerspectiveCamera
         makeDefault
         position={[-40, 40 * Math.SQRT2, 40]}
-        fov={45}
+        fov={30}
         onUpdate={(cam) => cam.lookAt(15, 0, -15)}
       />
 
