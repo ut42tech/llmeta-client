@@ -1,6 +1,6 @@
 "use client";
 
-import { MainLevel } from "@/components/MainLevel";
+import { Level } from "@/components/Level";
 import { PlayerTag } from "@/components/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/SnapRotateXROrigin";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
@@ -53,7 +53,7 @@ export const MainScene = () => {
         <PlayerTag />
       </SimpleCharacter>
 
-      <MainLevel onTeleport={setPosition} />
+      <Level onTeleport={setPosition} />
     </>
   );
 };
