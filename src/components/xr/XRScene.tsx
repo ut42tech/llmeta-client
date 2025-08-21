@@ -31,9 +31,9 @@ export const XRScene = () => {
     <>
       <PerspectiveCamera
         makeDefault
-        position={[-40, 40 * Math.SQRT2, 40]}
-        fov={30}
-        onUpdate={(cam) => cam.lookAt(15, 0, -15)}
+        position={[-5, 5 * Math.SQRT2, 5]}
+        fov={50}
+        onUpdate={(cam) => cam.lookAt(0, 2, 0)}
       />
 
       <SimpleCharacter
