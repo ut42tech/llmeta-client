@@ -1,6 +1,6 @@
 "use client";
 
-import { XRScene } from "@/components/XRScene";
+import { MainScene } from "@/components/main/MainScene";
 import { Canvas } from "@react-three/fiber";
 import { FontFamilyProvider } from "@react-three/uikit";
 import { BvhPhysicsWorld } from "@react-three/viverse";
@@ -19,7 +19,7 @@ const store = createXRStore({
   },
 });
 
-export const XRCanvas = () => {
+export const MainCanvas = () => {
   return (
     <Canvas
       className="!fixed !w-screen !h-screen"
@@ -34,7 +34,7 @@ export const XRCanvas = () => {
             }}
           >
             <XR store={store}>
-              <XRScene />
+              <MainScene />
             </XR>
           </FontFamilyProvider>
         </BvhPhysicsWorld>

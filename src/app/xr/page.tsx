@@ -1,4 +1,4 @@
-import { XRCanvas } from "@/components/XRCanvas";
+import { XRCanvas } from "@/components/xr/XRCanvas";
 
 export default function XRPage() {
   return (
