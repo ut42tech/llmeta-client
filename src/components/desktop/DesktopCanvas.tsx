@@ -1,7 +1,8 @@
 "use client";
 
-import { MainScene } from "@/components/main/MainScene";
+import { DesktopScene } from "@/components/desktop/DesktopScene";
 import { Canvas } from "@react-three/fiber";
+import { FontFamilyProvider } from "@react-three/uikit";
 import { BvhPhysicsWorld } from "@react-three/viverse";
 import { Suspense } from "react";
 
@@ -14,7 +15,13 @@ export const DesktopCanvas = () => {
     >
       <Suspense fallback={null}>
         <BvhPhysicsWorld>
-          <MainScene />
+          <FontFamilyProvider
+            notoSans={{
+              bold: "fonts/NotoSansJP-Bold.json",
+            }}
+          >
+            <DesktopScene />
+          </FontFamilyProvider>
         </BvhPhysicsWorld>
       </Suspense>
     </Canvas>
