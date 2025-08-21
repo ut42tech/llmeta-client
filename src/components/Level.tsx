@@ -11,7 +11,7 @@ type MainLevelProps = {
   onTeleport?: (position: Vector3) => void;
 };
 
-export const MainLevel = (props: MainLevelProps) => {
+export const Level = (props: MainLevelProps) => {
   return (
     <>
       {/* Image-based lighting for more realistic PBR response */}
