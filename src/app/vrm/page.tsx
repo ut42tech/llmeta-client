@@ -1,6 +1,5 @@
 "use client";
 
-import { CameraWidget } from "@/components/CameraWidget";
 import { VRMScene } from "@/components/VRMScene";
 import { Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
@@ -9,7 +8,6 @@ import { Suspense } from "react";
 function VRMPage() {
   return (
     <div className="h-screen w-screen">
-      <CameraWidget />
       <Loader />
       <Canvas shadows camera={{ position: [0.25, 0.25, 2], fov: 30 }}>
         <color attach="background" args={["#333"]} />
