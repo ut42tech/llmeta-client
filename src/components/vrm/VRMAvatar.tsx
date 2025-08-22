@@ -21,7 +21,6 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
     undefined,
     undefined,
     (loader) => {
-      // drei の GLTFLoader 型と three-vrm の型が食い違うため any で吸収
       (loader as any).register((parser: any) => {
         return new VRMLoaderPlugin(parser as any);
       });
@@ -60,7 +59,6 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
   useEffect(() => {
     const vrm: any = (userData as any).vrm;
     console.log("VRM loaded:", vrm);
-    // calling these functions greatly improves the performance
     VRMUtils.removeUnnecessaryVertices(scene as unknown as Object3D);
     VRMUtils.combineSkeletons(scene as unknown as Object3D);
     VRMUtils.combineMorphs(vrm);
@@ -70,8 +68,6 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
       (obj as any).frustumCulled = false;
     });
   }, [scene]);
-
-  // MediaPipe/Camera 機能は削除済み
 
   const {
     aa,
