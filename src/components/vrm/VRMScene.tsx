@@ -1,4 +1,4 @@
-import { VRMAvatar } from "@/components/vrm/VRMAvatar";
+import { VRMAvatar } from "@/components/VRMAvatar";
 import { CameraControls, Environment, Gltf } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { useControls } from "leva";
