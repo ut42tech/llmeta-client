@@ -26,7 +26,15 @@ export const DesktopScene = () => {
   });
   return (
     <>
-      <SimpleCharacter ref={characterRef}>
+      <SimpleCharacter
+        ref={characterRef}
+        model={{
+          type: "vrm",
+          url: "/models/8329890252317737768.vrm",
+          castShadow: true,
+          receiveShadow: true,
+        }}
+      >
         <PlayerTag />
       </SimpleCharacter>
 
