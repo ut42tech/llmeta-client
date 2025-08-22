@@ -6,6 +6,9 @@
 }
 
 @theme inline {
+  --height-screen: 100dvh;
+  --min-height-screen: 100dvh;
+  --max-height-screen: 100dvh;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
