@@ -1,6 +1,6 @@
 "use client";
 
-import { VRMScene } from "@/components/VRMScene";
+import { VRMScene } from "@/components/vrm/VRMScene";
 import { Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
