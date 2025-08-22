@@ -1,15 +1,20 @@
 import { remapMixamoAnimationToVrm } from "@/utils/remapMixamoAnimationToVrm";
 import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
+import type { VRM } from "@pixiv/three-vrm";
 import { useAnimations, useFBX, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useEffect, useMemo } from "react";
-import { Euler, Object3D, Quaternion, Vector3 } from "three";
+import { Object3D } from "three";
 import { lerp } from "three/src/math/MathUtils.js";
 
-const tmpVec3 = new Vector3();
-const tmpQuat = new Quaternion();
-const tmpEuler = new Euler();
+// Animation label constants
+const ANIM = {
+  NONE: "None",
+  IDLE: "Idle",
+  SWING: "Swing Dancing",
+  THRILLER: "Thriller Part 2",
+} as const;
 
 type VRMAvatarProps = {
   avatar: string;
@@ -27,44 +32,45 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
     }
   );
 
+  // Current VRM instance extracted for clarity
+  const vrm = (userData as any).vrm as VRM | undefined;
+
   const assetA = useFBX("models/animations/Swing Dancing.fbx");
   const assetB = useFBX("models/animations/Thriller Part 2.fbx");
   const assetC = useFBX("models/animations/Breathing Idle.fbx");
 
-  const currentVrm: any = (userData as any).vrm;
-
   const animationClipA = useMemo(() => {
-    const clip = remapMixamoAnimationToVrm(currentVrm, assetA);
-    clip.name = "Swing Dancing";
+    const clip = remapMixamoAnimationToVrm(vrm as any, assetA);
+    clip.name = ANIM.SWING;
     return clip;
-  }, [assetA, currentVrm]);
+  }, [assetA, vrm]);
 
   const animationClipB = useMemo(() => {
-    const clip = remapMixamoAnimationToVrm(currentVrm, assetB);
-    clip.name = "Thriller Part 2";
+    const clip = remapMixamoAnimationToVrm(vrm as any, assetB);
+    clip.name = ANIM.THRILLER;
     return clip;
-  }, [assetB, currentVrm]);
+  }, [assetB, vrm]);
 
   const animationClipC = useMemo(() => {
-    const clip = remapMixamoAnimationToVrm(currentVrm, assetC);
-    clip.name = "Idle";
+    const clip = remapMixamoAnimationToVrm(vrm as any, assetC);
+    clip.name = ANIM.IDLE;
     return clip;
-  }, [assetC, currentVrm]);
+  }, [assetC, vrm]);
 
   const { actions } = useAnimations(
     [animationClipA, animationClipB, animationClipC],
-    currentVrm?.scene as any
+    vrm?.scene as any
   );
 
   useEffect(() => {
-    const vrm: any = (userData as any).vrm;
-    console.log("VRM loaded:", vrm);
+    const v = (userData as any).vrm as VRM | undefined;
+    if (!v) return;
     VRMUtils.removeUnnecessaryVertices(scene as unknown as Object3D);
     VRMUtils.combineSkeletons(scene as unknown as Object3D);
-    VRMUtils.combineMorphs(vrm);
+    VRMUtils.combineMorphs(v);
 
     // Disable frustum culling
-    (vrm.scene as Object3D).traverse((obj: any) => {
+    v.scene.traverse((obj) => {
       (obj as any).frustumCulled = false;
     });
   }, [scene]);
@@ -93,83 +99,58 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
     sad: { value: 0, min: 0, max: 1 },
     happy: { value: 0, min: 0, max: 1 },
     animation: {
-      options: ["None", "Idle", "Swing Dancing", "Thriller Part 2"],
-      value: "Idle",
+      options: [ANIM.NONE, ANIM.IDLE, ANIM.SWING, ANIM.THRILLER],
+      value: ANIM.IDLE,
     },
   });
 
   useEffect(() => {
-    if (animation === "None") return;
+    if (animation === ANIM.NONE) return;
     actions[animation]?.play();
     return () => {
       actions[animation]?.stop();
     };
   }, [actions, animation]);
 
-  const lerpExpression = (name: string, value: number, lerpFactor: number) => {
-    (userData as any).vrm.expressionManager.setValue(
-      name,
-      lerp(
-        (userData as any).vrm.expressionManager.getValue(name),
-        value,
-        lerpFactor
-      )
-    );
-  };
-
-  const rotateBone = (
-    boneName: string,
-    value: { x: number; y: number; z: number },
-    slerpFactor: number,
-    flip = {
-      x: 1,
-      y: 1,
-      z: 1,
-    }
+  const lerpExpression = (
+    manager: NonNullable<VRM["expressionManager"]>,
+    name: string,
+    value: number,
+    lerpFactor: number
   ) => {
-    const bone = (userData as any).vrm.humanoid.getNormalizedBoneNode(
-      boneName
-    ) as any;
-    if (!bone) {
-      console.warn(
-        `Bone ${boneName} not found in VRM humanoid. Check the bone name.`
-      );
-      console.log(
-        "userData.vrm.humanoid.bones",
-        (userData as any).vrm.humanoid
-      );
-      return;
-    }
-
-    tmpEuler.set(value.x * flip.x, value.y * flip.y, value.z * flip.z);
-    tmpQuat.setFromEuler(tmpEuler);
-    bone.quaternion.slerp(tmpQuat, slerpFactor);
+    const current = manager.getValue(name) ?? 0;
+    manager.setValue(name, lerp(current, value, lerpFactor));
   };
 
   useFrame((_, delta) => {
-    if (!(userData as any).vrm) {
-      return;
-    }
-    (userData as any).vrm.expressionManager.setValue("angry", angry);
-    (userData as any).vrm.expressionManager.setValue("sad", sad);
-    (userData as any).vrm.expressionManager.setValue("happy", happy);
-    [
-      { name: "aa", value: aa },
-      { name: "ih", value: ih },
-      { name: "ee", value: ee },
-      { name: "oh", value: oh },
-      { name: "ou", value: ou },
-      { name: "blinkLeft", value: blinkLeft },
-      { name: "blinkRight", value: blinkRight },
-    ].forEach((item) => {
-      lerpExpression(item.name, item.value, delta * 12);
-    });
+    const v = (userData as any).vrm as VRM | undefined;
+    if (!v) return;
 
-    (userData as any).vrm.update(delta);
+    const manager = v.expressionManager;
+    if (manager) {
+      // Base expressions
+      manager.setValue("angry", angry);
+      manager.setValue("sad", sad);
+      manager.setValue("happy", happy);
+      [
+        { name: "aa", value: aa },
+        { name: "ih", value: ih },
+        { name: "ee", value: ee },
+        { name: "oh", value: oh },
+        { name: "ou", value: ou },
+        { name: "blinkLeft", value: blinkLeft },
+        { name: "blinkRight", value: blinkRight },
+      ].forEach((item) => {
+        lerpExpression(manager, item.name, item.value, delta * 12);
+      });
+    }
+
+    v.update(delta);
   });
 
   return (
     <group {...props}>
+      {/* Some VRM models face opposite; unify facing direction */}
       <primitive
         object={scene}
         rotation-y={avatar !== "3636451243928341470.vrm" ? Math.PI : 0}
