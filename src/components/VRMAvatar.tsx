@@ -151,10 +151,7 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
   return (
     <group {...props}>
       {/* Some VRM models face opposite; unify facing direction */}
-      <primitive
-        object={scene}
-        rotation-y={avatar !== "3636451243928341470.vrm" ? Math.PI : 0}
-      />
+      <primitive object={scene} rotation-y={Math.PI} />
     </group>
   );
 };

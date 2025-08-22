@@ -6,10 +6,8 @@ import { useRef } from "react";
 
 // Available VRM model filenames for the UI
 const AVATAR_OPTIONS = [
-  "262410318834873893.vrm",
-  "3859814441197244330.vrm",
-  "3636451243928341470.vrm",
-  "8087383217573817818.vrm",
+  "8329890252317737768.vrm",
+  "8590256991748008892.vrm",
 ] as const;
 
 export const VRMScene = () => {
@@ -18,7 +16,7 @@ export const VRMScene = () => {
 
   const { avatar } = useControls("VRM", {
     avatar: {
-      value: AVATAR_OPTIONS[1],
+      value: AVATAR_OPTIONS[0],
       options: [...AVATAR_OPTIONS],
     },
   });
