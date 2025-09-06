@@ -42,7 +42,7 @@ export default function manifest(): MetadataRoute.Manifest {
         name: "デスクトップ モード",
         short_name: "Desktop",
         url: "/desktop",
-        description: "マウス/キーボードでの探索",
+        description: "マウス・キーボードでの探索",
       },
     ],
     categories: ["entertainment", "games", "productivity"],
