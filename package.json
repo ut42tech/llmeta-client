@@ -10,7 +10,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@colyseus/schema": "^3.0.60",
     "@radix-ui/react-slot": "^1.2.3",
     "@react-three/drei": "^10.6.1",
     "@react-three/fiber": "^9.3.0",
@@ -21,7 +20,6 @@
     "@react-three/xr": "^6.6.22",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "colyseus.js": "^0.16.19",
     "jotai": "^2.13.0",
     "leva": "^0.10.0",
     "lucide-react": "^0.540.0",
