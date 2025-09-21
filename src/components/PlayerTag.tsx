@@ -3,9 +3,13 @@ import { Root, Text } from "@react-three/uikit";
 import { useRef } from "react";
 import { Group } from "three";
 
-export const PlayerTag = () => {
+type PlayerTagProps = {
+  name: string;
+};
+
+export const PlayerTag = (props: PlayerTagProps) => {
   const profile = {
-    name: "プレイヤー",
+    name: props.name,
   };
 
   const ref = useRef<Group>(null);

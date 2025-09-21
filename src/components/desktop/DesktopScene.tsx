@@ -35,7 +35,7 @@ export const DesktopScene = () => {
           receiveShadow: true,
         }}
       >
-        <PlayerTag />
+        <PlayerTag name={"プレイヤー"} />
       </SimpleCharacter>
 
       <Level />
