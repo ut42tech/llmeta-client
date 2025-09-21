@@ -1,32 +1,17 @@
 "use client";
 
 import { Level } from "@/components/Level";
-import { PlayerTag } from "@/components/PlayerTag";
+import { Player, PlayerHandle } from "@/components/player/Player";
+import { PlayerTag } from "@/components/player/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/xr/SnapRotateXROrigin";
 import { PerspectiveCamera } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { SimpleCharacter, useXRControllerInput } from "@react-three/viverse";
-import { useCallback, useRef } from "react";
-import { Group, Vector3 } from "three";
+import { useXRControllerInput } from "@react-three/viverse";
+import { useRef } from "react";
+import { Vector3 } from "three";
 
 export const XRScene = () => {
-  const characterRef = useRef<Group>(null);
+  const PlayerRef = useRef<PlayerHandle>(null);
   const input = useXRControllerInput();
-
-  const setPosition = useCallback((v: Vector3) => {
-    const ref = characterRef.current;
-    if (!ref) return;
-    ref.position.copy(v);
-  }, []);
-
-  useFrame(() => {
-    if (characterRef.current == null) {
-      return;
-    }
-    if (characterRef.current.position.y < -10) {
-      setPosition(new Vector3(0, 0, 0));
-    }
-  });
   return (
     <>
       <PerspectiveCamera
@@ -36,17 +21,17 @@ export const XRScene = () => {
         onUpdate={(cam) => cam.lookAt(0, 2, 0)}
       />
 
-      <SimpleCharacter
+      <Player
+        ref={PlayerRef}
         input={[input]}
         cameraBehavior={false}
         model={false}
-        ref={characterRef}
       >
         <SnapRotateXROrigin />
-        <PlayerTag />
-      </SimpleCharacter>
+        <PlayerTag name={"プレイヤー"} />
+      </Player>
 
-      <Level onTeleport={setPosition} />
+      <Level onTeleport={(v) => PlayerRef.current?.setPosition(v as Vector3)} />
     </>
   );
 };

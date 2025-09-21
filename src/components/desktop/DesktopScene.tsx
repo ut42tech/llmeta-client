@@ -1,33 +1,13 @@
 "use client";
 
 import { Level } from "@/components/Level";
-import { PlayerTag } from "@/components/PlayerTag";
-import { useFrame } from "@react-three/fiber";
-import { SimpleCharacter } from "@react-three/viverse";
-import { useCallback, useRef } from "react";
-import { Group, Vector3 } from "three";
+import { Player } from "@/components/player/Player";
+import { PlayerTag } from "@/components/player/PlayerTag";
 
 export const DesktopScene = () => {
-  const characterRef = useRef<Group>(null);
-
-  const setPosition = useCallback((v: Vector3) => {
-    const ref = characterRef.current;
-    if (!ref) return;
-    ref.position.copy(v);
-  }, []);
-
-  useFrame(() => {
-    if (characterRef.current == null) {
-      return;
-    }
-    if (characterRef.current.position.y < -10) {
-      setPosition(new Vector3(0, 0, 0));
-    }
-  });
   return (
     <>
-      <SimpleCharacter
-        ref={characterRef}
+      <Player
         model={{
           type: "vrm",
           url: "/models/8329890252317737768.vrm",
@@ -36,7 +16,7 @@ export const DesktopScene = () => {
         }}
       >
         <PlayerTag name={"プレイヤー"} />
-      </SimpleCharacter>
+      </Player>
 
       <Level />
     </>
