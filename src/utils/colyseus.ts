@@ -21,6 +21,6 @@ export const {
   useColyseusRoom,
   useColyseusState,
 } = colyseus<MyRoomState>(
-  process.env.NEXT_PUBLIC_SERVER_ENDPOINT || "ws://localhost:2567",
+  process.env.NEXT_PUBLIC_SERVER_ENDPOINT || "http://localhost:2567",
   MyRoomState
 );
