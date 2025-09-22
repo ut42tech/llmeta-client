@@ -4,6 +4,8 @@ import { Player } from "@/components/player/Player";
 import { PlayerTag } from "@/components/player/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/xr/SnapRotateXROrigin";
 import { PerspectiveCamera } from "@react-three/drei";
+import { useCallback, useMemo } from "react";
+import { MessageType, useColyseusRoom } from "@/utils/colyseus";
 
 const MODEL = {
   type: "vrm",
@@ -29,6 +31,35 @@ export const LocalPlayer = ({
   onPoseUpdate,
   poseUpdateIntervalMs,
 }: LocalPlayerProps) => {
+  const room = useColyseusRoom();
+
+  const mergedOnPoseUpdate = useCallback(
+    (pose: {
+      position: { x: number; y: number; z: number };
+      rotation: { x: number; y: number; z: number };
+      quaternion: { x: number; y: number; z: number; w: number };
+    }) => {
+      onPoseUpdate?.(pose);
+
+      if (room) {
+        try {
+          room.send(MessageType.MOVE, {
+            position: pose.position,
+            rotation: pose.rotation,
+          });
+        } catch (e) {
+          console.warn("Failed to send pose to Colyseus:", e);
+        }
+      }
+    },
+    [room, onPoseUpdate]
+  );
+
+  const interval = useMemo(
+    () => poseUpdateIntervalMs ?? 50,
+    [poseUpdateIntervalMs]
+  );
+
   return (
     <>
       {isXR ? (
@@ -45,8 +76,8 @@ export const LocalPlayer = ({
         input={isXR ? [input] : undefined}
         cameraBehavior={isXR ? false : true}
         model={isXR ? false : MODEL}
-        onPoseUpdate={onPoseUpdate}
-        poseUpdateIntervalMs={poseUpdateIntervalMs}
+        onPoseUpdate={mergedOnPoseUpdate}
+        poseUpdateIntervalMs={interval}
       >
         <PlayerTag name={name} />
         {isXR ? <SnapRotateXROrigin /> : null}
