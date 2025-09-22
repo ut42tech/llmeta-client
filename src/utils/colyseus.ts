@@ -2,6 +2,10 @@ import { Schema, type, MapSchema } from "@colyseus/schema";
 import { colyseus } from "use-colyseus";
 
 // Same as Server/src/rooms/MyRoom.ts
+
+export enum MessageType {
+  MOVE,
+}
 export class Vec3 extends Schema {
   @type("number") x: number = 0;
   @type("number") y: number = 0;
@@ -9,12 +13,8 @@ export class Vec3 extends Schema {
 }
 
 export class Player extends Schema {
-  @type(Vec3) position: Vec3 = new Vec3(0, 0, 0);
-  @type(Vec3) rotation: Vec3 = new Vec3(0, 0, 0);
-}
-
-export class MyRoomState extends Schema {
-  @type({ map: Player }) players = new MapSchema<Player>();
+  @type(Vec3) position: Vec3 = new Vec3();
+  @type(Vec3) rotation: Vec3 = new Vec3();
 }
 
 // here is where we create the colyseus client and hooks
