@@ -17,6 +17,8 @@ type LocalPlayerProps = {
   isXR: boolean;
   input?: any;
   PlayerRef?: any;
+  onPoseUpdate?: (pose: any) => void;
+  poseUpdateIntervalMs?: number;
 };
 
 export const LocalPlayer = ({
@@ -24,6 +26,8 @@ export const LocalPlayer = ({
   isXR,
   input,
   PlayerRef,
+  onPoseUpdate,
+  poseUpdateIntervalMs,
 }: LocalPlayerProps) => {
   return (
     <>
@@ -41,6 +45,8 @@ export const LocalPlayer = ({
         input={isXR ? [input] : undefined}
         cameraBehavior={isXR ? false : true}
         model={isXR ? false : MODEL}
+        onPoseUpdate={onPoseUpdate}
+        poseUpdateIntervalMs={poseUpdateIntervalMs}
       >
         <PlayerTag name={name} />
         {isXR ? <SnapRotateXROrigin /> : null}
