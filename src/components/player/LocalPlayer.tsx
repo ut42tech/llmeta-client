@@ -5,7 +5,7 @@ import { PlayerTag } from "@/components/player/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/xr/SnapRotateXROrigin";
 import { PerspectiveCamera } from "@react-three/drei";
 import { useCallback, useMemo } from "react";
-import { MessageType, useColyseusRoom } from "@/utils/colyseus";
+import { MessageType, MoveData, useColyseusRoom } from "@/utils/colyseus";
 
 const MODEL = {
   type: "vrm",
@@ -43,10 +43,11 @@ export const LocalPlayer = ({
 
       if (room) {
         try {
-          room.send(MessageType.MOVE, {
+          const payload: MoveData = {
             position: pose.position,
             rotation: pose.rotation,
-          });
+          };
+          room.send(MessageType.MOVE, payload);
         } catch (e) {
           console.warn("Failed to send pose to Colyseus:", e);
         }
