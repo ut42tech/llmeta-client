@@ -17,6 +17,10 @@ export class Player extends Schema {
   @type(Vec3) rotation: Vec3 = new Vec3();
 }
 
+export class MyRoomState extends Schema {
+  @type({ map: Player }) players = new MapSchema<Player>();
+}
+
 // here is where we create the colyseus client and hooks
 export const {
   client,
