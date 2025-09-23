@@ -12,8 +12,8 @@ import {
 import { MessageType, MoveData, useColyseusRoom } from "@/utils/colyseus";
 import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Euler, Quaternion, Vector3 } from "three";
-import { useXR } from "@react-three/xr";
+import { Euler, Quaternion, Vector3, Object3D } from "three";
+import { XRSpace, useXRInputSourceState } from "@react-three/xr";
 
 const MODEL = {
   type: "vrm",
@@ -147,16 +147,20 @@ const XRControllersProbe = ({
     has: boolean;
   }>;
 }) => {
-  const xr: any = useXR();
-  useFrame(() => {
-    const controllers: any[] = xr?.controllers ?? [];
-    const l = controllers.find((c) => c?.inputSource?.handedness === "left");
-    const r = controllers.find((c) => c?.inputSource?.handedness === "right");
+  // v6 API: 入力ソース状態を取得
+  const leftState = useXRInputSourceState("controller", "left");
+  const rightState = useXRInputSourceState("controller", "right");
 
-    if (l?.grip) {
-      const pos = l.grip.getWorldPosition(new Vector3());
+  // XRSpace を使って grip/targetRay space の姿勢を Three の Object3D に反映
+  const leftSpaceRef = useRef<Object3D>(null);
+  const rightSpaceRef = useRef<Object3D>(null);
+
+  useFrame(() => {
+    // Left
+    if (leftState?.inputSource && leftSpaceRef.current) {
+      const pos = leftSpaceRef.current.getWorldPosition(new Vector3());
       const rot = new Euler().setFromQuaternion(
-        l.grip.getWorldQuaternion(new Quaternion()),
+        leftSpaceRef.current.getWorldQuaternion(new Quaternion()),
         "YXZ"
       );
       leftRef.current.pos.copy(pos);
@@ -166,10 +170,11 @@ const XRControllersProbe = ({
       leftRef.current.has = false;
     }
 
-    if (r?.grip) {
-      const pos = r.grip.getWorldPosition(new Vector3());
+    // Right
+    if (rightState?.inputSource && rightSpaceRef.current) {
+      const pos = rightSpaceRef.current.getWorldPosition(new Vector3());
       const rot = new Euler().setFromQuaternion(
-        r.grip.getWorldQuaternion(new Quaternion()),
+        rightSpaceRef.current.getWorldQuaternion(new Quaternion()),
         "YXZ"
       );
       rightRef.current.pos.copy(pos);
@@ -179,5 +184,18 @@ const XRControllersProbe = ({
       rightRef.current.has = false;
     }
   });
-  return null;
+
+  // gripSpace が無ければ targetRaySpace をフォールバックに使用
+  const leftSpace =
+    leftState?.inputSource?.gripSpace ?? leftState?.inputSource?.targetRaySpace;
+  const rightSpace =
+    rightState?.inputSource?.gripSpace ??
+    rightState?.inputSource?.targetRaySpace;
+
+  return (
+    <>
+      {leftSpace ? <XRSpace ref={leftSpaceRef} space={leftSpace} /> : null}
+      {rightSpace ? <XRSpace ref={rightSpaceRef} space={rightSpace} /> : null}
+    </>
+  );
 };
