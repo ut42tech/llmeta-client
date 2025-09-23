@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Loader } from "@react-three/drei";
 import { MainCanvas } from "@/components/main/MainCanvas";
 import { Button } from "@/components/ui/button";
+import { PersonStanding, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
@@ -29,18 +30,15 @@ export default function Home() {
           </div>
           <nav className="hidden gap-2 md:flex">
             <Button asChild variant="ghost" size="sm">
-              <Link
-                href={{ pathname: "/experience", query: { mode: "desktop" } }}
-              >
-                Desktop
+              <Link href="/experience">
+                <Sparkles />
+                体験する
               </Link>
             </Button>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/vrm">VRM</Link>
-            </Button>
-            <Button asChild variant="ghost" size="sm">
-              <Link href={{ pathname: "/experience", query: { mode: "xr" } }}>
-                XR
+              <Link href="/vrm">
+                <PersonStanding />
+                アバター
               </Link>
             </Button>
           </nav>
@@ -58,11 +56,9 @@ export default function Home() {
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row md:mt-10">
               <Button asChild size="lg" className="min-w-40">
-                <Link
-                  href={{ pathname: "/experience", query: { mode: "desktop" } }}
-                  aria-label="デスクトップ体験へ移動"
-                >
-                  デスクトップで試す
+                <Link href="/experience" aria-label="体験ページへ移動">
+                  <Sparkles />
+                  体験する
                 </Link>
               </Button>
               <Button
@@ -72,20 +68,8 @@ export default function Home() {
                 className="min-w-40"
               >
                 <Link href="/vrm" aria-label="VRMアバター体験へ移動">
-                  VRMアバター
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="secondary"
-                size="lg"
-                className="min-w-40"
-              >
-                <Link
-                  href={{ pathname: "/experience", query: { mode: "xr" } }}
-                  aria-label="XR体験へ移動"
-                >
-                  XRで没入
+                  <PersonStanding />
+                  アバタープレビュー
                 </Link>
               </Button>
             </div>
