@@ -2,59 +2,26 @@
 
 import { ExperienceCanvas } from "@/components/experience/ExperienceCanvas";
 import { Loader } from "@react-three/drei";
-import { connectToColyseus, disconnectFromColyseus } from "@/utils/colyseus";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useState } from "react";
 import { MonitorSmartphone } from "lucide-react";
+import { useXrSupport } from "@/hooks/useXrSupport";
+import { useColyseusLifecycle } from "@/hooks/useColyseusLifecycle";
 
 export default function ExperiencePage() {
   const [mode, setMode] = useState<"desktop" | "xr">("desktop");
-  const [xrSupported, setXrSupported] = useState<boolean>(false);
+  const xrSupported = useXrSupport();
 
   // Detect XR support and apply initial mode from query (default desktop)
   useEffect(() => {
     if (typeof window === "undefined") return;
-    let disposed = false;
-
-    const check = async () => {
-      try {
-        const supported = await (async () => {
-          // Basic WebXR support detection
-          // Some browsers may not expose navigator.xr; guard carefully
-          const nav: any = navigator as any;
-          if (!nav?.xr?.isSessionSupported) return false;
-          return await nav.xr.isSessionSupported("immersive-vr");
-        })();
-        if (!disposed) setXrSupported(!!supported);
-
-        // Allow deep-linking via ?mode=xr when supported
-        const params = new URLSearchParams(window.location.search);
-        const wantXR = params.get("mode") === "xr";
-        if (wantXR && supported) setMode("xr");
-      } catch {
-        if (!disposed) setXrSupported(false);
-      }
-    };
-    check();
-
-    return () => {
-      disposed = true;
-    };
-  }, []);
+    const params = new URLSearchParams(window.location.search);
+    const wantXR = params.get("mode") === "xr";
+    if (wantXR && xrSupported) setMode("xr");
+  }, [xrSupported]);
 
   // Colyseus connection lifecycle
-  useEffect(() => {
-    (async () => {
-      try {
-        await connectToColyseus("my_room");
-      } catch (e) {
-        console.error("Failed to join Colyseus room:", e);
-      }
-    })();
-    return () => {
-      disconnectFromColyseus();
-    };
-  }, []);
+  useColyseusLifecycle("my_room");
 
   const enterXR = useCallback(() => setMode("xr"), []);
   const exitXR = useCallback(() => setMode("desktop"), []);

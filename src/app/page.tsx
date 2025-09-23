@@ -29,13 +29,19 @@ export default function Home() {
           </div>
           <nav className="hidden gap-2 md:flex">
             <Button asChild variant="ghost" size="sm">
-              <Link href="/desktop">Desktop</Link>
+              <Link
+                href={{ pathname: "/experience", query: { mode: "desktop" } }}
+              >
+                Desktop
+              </Link>
             </Button>
             <Button asChild variant="ghost" size="sm">
               <Link href="/vrm">VRM</Link>
             </Button>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/xr">XR</Link>
+              <Link href={{ pathname: "/experience", query: { mode: "xr" } }}>
+                XR
+              </Link>
             </Button>
           </nav>
         </header>
@@ -52,7 +58,10 @@ export default function Home() {
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row md:mt-10">
               <Button asChild size="lg" className="min-w-40">
-                <Link href="/desktop" aria-label="デスクトップ体験へ移動">
+                <Link
+                  href={{ pathname: "/experience", query: { mode: "desktop" } }}
+                  aria-label="デスクトップ体験へ移動"
+                >
                   デスクトップで試す
                 </Link>
               </Button>
@@ -72,7 +81,10 @@ export default function Home() {
                 size="lg"
                 className="min-w-40"
               >
-                <Link href="/xr" aria-label="XR体験へ移動">
+                <Link
+                  href={{ pathname: "/experience", query: { mode: "xr" } }}
+                  aria-label="XR体験へ移動"
+                >
                   XRで没入
                 </Link>
               </Button>
