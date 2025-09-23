@@ -32,7 +32,7 @@ export const Players = () => {
       // サーバーのpositionは「頭（カメラ）」のワールド位置
       const pos: [number, number, number] = [
         p.position?.x ?? 0,
-        p.position?.y ?? 0,
+        (p.position?.y ?? 0) + 1.5,
         p.position?.z ?? 0,
       ];
       const rot: [number, number, number] = [
