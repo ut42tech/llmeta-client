@@ -3,6 +3,7 @@
 import { DesktopCanvas } from "@/components/desktop/DesktopCanvas";
 import { useEffect, useState } from "react";
 import { connectToColyseus, disconnectFromColyseus } from "@/utils/colyseus";
+import { Loader } from "@react-three/drei";
 
 export default function DesktopPage() {
   const [mounted, setMounted] = useState(false);
@@ -29,6 +30,7 @@ export default function DesktopPage() {
 
   return (
     <div className="h-screen w-screen">
+      <Loader />
       <DesktopCanvas />
     </div>
   );
