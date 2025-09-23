@@ -32,8 +32,8 @@ export type PlayerProps = PropsWithChildren<{
   model?: any;
   /** XR などの入力を透過 */
   input?: any;
-  /** 既定のカメラ挙動を無効化する場合に使用 */
-  cameraBehavior?: boolean;
+  /** カメラ挙動（true/false での既定制御 or 具体的なカメラビヘイビアを指定） */
+  cameraBehavior?: any;
   /** しきい値より落下したら原点へリスポーン（既定: -10） */
   fallThresholdY?: number;
   /** フレーム毎または一定間隔で現在の姿勢をコールバック（サーバー送信用） */

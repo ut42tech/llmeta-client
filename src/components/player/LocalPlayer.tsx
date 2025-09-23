@@ -4,6 +4,11 @@ import { Player } from "@/components/player/Player";
 import { PlayerTag } from "@/components/player/PlayerTag";
 import { PerspectiveCamera } from "@react-three/drei";
 import { useCallback, useMemo } from "react";
+import {
+  FirstPersonCharacterCameraBehavior,
+  LocomotionKeyboardInput,
+  PointerLockInput,
+} from "@react-three/viverse";
 import { MessageType, MoveData, useColyseusRoom } from "@/utils/colyseus";
 import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
 
@@ -74,9 +79,9 @@ export const LocalPlayer = ({
 
       <Player
         ref={isXR ? PlayerRef : null}
-        input={isXR ? [input] : undefined}
-        cameraBehavior={isXR ? false : true}
-        model={isXR ? false : MODEL}
+        input={isXR ? [input] : [LocomotionKeyboardInput, PointerLockInput]}
+        cameraBehavior={isXR ? false : FirstPersonCharacterCameraBehavior}
+        model={isXR ? false : false}
         onPoseUpdate={mergedOnPoseUpdate}
         poseUpdateIntervalMs={interval}
       >

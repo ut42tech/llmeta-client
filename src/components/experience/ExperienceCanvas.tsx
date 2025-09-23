@@ -32,6 +32,7 @@ export const ExperienceCanvas = ({ mode }: Props) => {
       className="!fixed !w-screen !h-screen"
       shadows
       gl={{ antialias: true, localClippingEnabled: true }}
+      onClick={(e) => (e.target as HTMLElement).requestPointerLock()}
     >
       <Suspense fallback={null}>
         <BvhPhysicsWorld>
