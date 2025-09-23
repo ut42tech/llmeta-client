@@ -23,7 +23,7 @@ export const PlayerTag = (props: PlayerTagProps) => {
   });
 
   return (
-    <group ref={ref} position-y={2.15}>
+    <group ref={ref} position-y={0.5}>
       <Root
         depthTest={false}
         renderOrder={1}

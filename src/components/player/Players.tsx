@@ -27,7 +27,7 @@ export const Players = () => {
       if (id === localId) return;
       const pos: [number, number, number] = [
         p.position?.x ?? 0,
-        p.position?.y ?? 0,
+        (p.position?.y ?? 0) + 1.5,
         p.position?.z ?? 0,
       ];
       const rot: [number, number, number] = [
@@ -73,7 +73,9 @@ const RemotePlayerEntity = ({
   const groupRef = useRef<Group>(null);
   const targetPos = useRef(new Vector3(...position));
   const targetQuat = useRef(
-    new Quaternion().setFromEuler(new Euler(...rotation))
+    new Quaternion().setFromEuler(
+      new Euler(rotation[0], rotation[1], rotation[2], "YXZ")
+    )
   );
 
   // サーバー更新でターゲットを更新
@@ -82,7 +84,7 @@ const RemotePlayerEntity = ({
   }, [position]);
 
   useEffect(() => {
-    const e = new Euler(rotation[0], rotation[1], rotation[2]);
+    const e = new Euler(rotation[0], rotation[1], rotation[2], "YXZ");
     targetQuat.current.setFromEuler(e);
   }, [rotation]);
 

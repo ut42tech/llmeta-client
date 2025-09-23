@@ -11,6 +11,8 @@ import {
 } from "@react-three/viverse";
 import { MessageType, MoveData, useColyseusRoom } from "@/utils/colyseus";
 import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
+import { useThree } from "@react-three/fiber";
+import { Euler, Quaternion } from "three";
 
 const MODEL = {
   type: "vrm",
@@ -37,6 +39,14 @@ export const LocalPlayer = ({
   poseUpdateIntervalMs,
 }: LocalPlayerProps) => {
   const room = useColyseusRoom();
+  const { camera } = useThree();
+
+  const getCameraEulerYXZ = useCallback(() => {
+    const q = new Quaternion();
+    camera.getWorldQuaternion(q);
+    const e = new Euler().setFromQuaternion(q, "YXZ");
+    return e;
+  }, [camera]);
 
   const mergedOnPoseUpdate = useCallback(
     (pose: {
@@ -48,9 +58,10 @@ export const LocalPlayer = ({
 
       if (room) {
         try {
+          const e = getCameraEulerYXZ();
           const payload: MoveData = {
             position: pose.position,
-            rotation: pose.rotation,
+            rotation: { x: e.x, y: e.y, z: e.z },
           };
           room.send(MessageType.MOVE, payload);
         } catch (e) {
@@ -58,7 +69,7 @@ export const LocalPlayer = ({
         }
       }
     },
-    [room, onPoseUpdate]
+    [room, onPoseUpdate, getCameraEulerYXZ]
   );
 
   const interval = useMemo(
