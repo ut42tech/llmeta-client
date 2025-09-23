@@ -61,7 +61,7 @@ export const LocalPlayer = ({
           const e = getCameraEulerYXZ();
           const payload: MoveData = {
             position: pose.position,
-            rotation: { x: e.x, y: e.y, z: e.z },
+            rotation: { x: e.x, y: e.y, z: 0 },
           };
           room.send(MessageType.MOVE, payload);
         } catch (e) {

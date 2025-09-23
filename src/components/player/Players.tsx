@@ -73,9 +73,7 @@ const RemotePlayerEntity = ({
   const groupRef = useRef<Group>(null);
   const targetPos = useRef(new Vector3(...position));
   const targetQuat = useRef(
-    new Quaternion().setFromEuler(
-      new Euler(rotation[0], rotation[1], rotation[2], "YXZ")
-    )
+    new Quaternion().setFromEuler(new Euler(rotation[0], rotation[1], 0, "YXZ"))
   );
 
   // サーバー更新でターゲットを更新
@@ -84,7 +82,7 @@ const RemotePlayerEntity = ({
   }, [position]);
 
   useEffect(() => {
-    const e = new Euler(rotation[0], rotation[1], rotation[2], "YXZ");
+    const e = new Euler(rotation[0], rotation[1], 0, "YXZ");
     targetQuat.current.setFromEuler(e);
   }, [rotation]);
 
