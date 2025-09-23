@@ -2,10 +2,10 @@
 
 import { Player } from "@/components/player/Player";
 import { PlayerTag } from "@/components/player/PlayerTag";
-import { SnapRotateXROrigin } from "@/components/xr/SnapRotateXROrigin";
 import { PerspectiveCamera } from "@react-three/drei";
 import { useCallback, useMemo } from "react";
 import { MessageType, MoveData, useColyseusRoom } from "@/utils/colyseus";
+import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
 
 const MODEL = {
   type: "vrm",
