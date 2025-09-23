@@ -3,7 +3,7 @@
 import { Player } from "@/components/player/Player";
 import { PlayerTag } from "@/components/player/PlayerTag";
 import { PerspectiveCamera } from "@react-three/drei";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import {
   FirstPersonCharacterCameraBehavior,
   LocomotionKeyboardInput,
@@ -11,8 +11,9 @@ import {
 } from "@react-three/viverse";
 import { MessageType, MoveData, useColyseusRoom } from "@/utils/colyseus";
 import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
-import { useThree } from "@react-three/fiber";
-import { Euler, Quaternion } from "three";
+import { useFrame, useThree } from "@react-three/fiber";
+import { Euler, Quaternion, Vector3 } from "three";
+import { useXR } from "@react-three/xr";
 
 const MODEL = {
   type: "vrm",
@@ -40,6 +41,17 @@ export const LocalPlayer = ({
 }: LocalPlayerProps) => {
   const room = useColyseusRoom();
   const { camera } = useThree();
+  // XR時のみ更新される左右手ポーズの共有Ref
+  const leftHandRef = useRef<{ pos: Vector3; euler: Euler; has: boolean }>({
+    pos: new Vector3(),
+    euler: new Euler(),
+    has: false,
+  });
+  const rightHandRef = useRef<{ pos: Vector3; euler: Euler; has: boolean }>({
+    pos: new Vector3(),
+    euler: new Euler(),
+    has: false,
+  });
 
   const getCameraEulerYXZ = useCallback(() => {
     const q = new Quaternion();
@@ -58,18 +70,35 @@ export const LocalPlayer = ({
 
       if (room) {
         try {
+          // 頭（カメラ）のワールド姿勢
           const e = getCameraEulerYXZ();
+
+          const camPos = camera.getWorldPosition(new Vector3());
           const payload: MoveData = {
-            position: pose.position,
+            // プレイヤーのpositionは頭（カメラ）のワールド位置を送る
+            position: { x: camPos.x, y: camPos.y, z: camPos.z },
             rotation: { x: e.x, y: e.y, z: 0 },
           };
+          // 子コンポーネントで更新される手の最新値を取り込む
+          if (leftHandRef.current.has) {
+            const lp = leftHandRef.current.pos;
+            const le = leftHandRef.current.euler;
+            payload.leftHandPosition = { x: lp.x, y: lp.y, z: lp.z };
+            payload.leftHandRotation = { x: le.x, y: le.y, z: le.z };
+          }
+          if (rightHandRef.current.has) {
+            const rp = rightHandRef.current.pos;
+            const re = rightHandRef.current.euler;
+            payload.rightHandPosition = { x: rp.x, y: rp.y, z: rp.z };
+            payload.rightHandRotation = { x: re.x, y: re.y, z: re.z };
+          }
           room.send(MessageType.MOVE, payload);
         } catch (e) {
           console.warn("Failed to send pose to Colyseus:", e);
         }
       }
     },
-    [room, onPoseUpdate, getCameraEulerYXZ]
+    [room, onPoseUpdate, getCameraEulerYXZ, camera, leftHandRef, rightHandRef]
   );
 
   const interval = useMemo(
@@ -97,8 +126,58 @@ export const LocalPlayer = ({
         poseUpdateIntervalMs={interval}
       >
         <PlayerTag name={name} />
+        {isXR ? (
+          <XRControllersProbe leftRef={leftHandRef} rightRef={rightHandRef} />
+        ) : null}
         {isXR ? <SnapRotateXROrigin /> : null}
       </Player>
     </>
   );
+};
+
+// XRコンテキスト内でのみマウントし、左右手（コントローラーgrip）のワールド姿勢をRefに書き込む
+const XRControllersProbe = ({
+  leftRef,
+  rightRef,
+}: {
+  leftRef: React.MutableRefObject<{ pos: Vector3; euler: Euler; has: boolean }>;
+  rightRef: React.MutableRefObject<{
+    pos: Vector3;
+    euler: Euler;
+    has: boolean;
+  }>;
+}) => {
+  const xr: any = useXR();
+  useFrame(() => {
+    const controllers: any[] = xr?.controllers ?? [];
+    const l = controllers.find((c) => c?.inputSource?.handedness === "left");
+    const r = controllers.find((c) => c?.inputSource?.handedness === "right");
+
+    if (l?.grip) {
+      const pos = l.grip.getWorldPosition(new Vector3());
+      const rot = new Euler().setFromQuaternion(
+        l.grip.getWorldQuaternion(new Quaternion()),
+        "YXZ"
+      );
+      leftRef.current.pos.copy(pos);
+      leftRef.current.euler.copy(rot);
+      leftRef.current.has = true;
+    } else {
+      leftRef.current.has = false;
+    }
+
+    if (r?.grip) {
+      const pos = r.grip.getWorldPosition(new Vector3());
+      const rot = new Euler().setFromQuaternion(
+        r.grip.getWorldQuaternion(new Quaternion()),
+        "YXZ"
+      );
+      rightRef.current.pos.copy(pos);
+      rightRef.current.euler.copy(rot);
+      rightRef.current.has = true;
+    } else {
+      rightRef.current.has = false;
+    }
+  });
+  return null;
 };
