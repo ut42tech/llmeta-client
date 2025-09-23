@@ -36,7 +36,12 @@ export const PlayerTag = (props: PlayerTagProps) => {
         alignItems="center"
         gap={4}
       >
-        <Text fontFamily="notoSans" fontWeight="bold" fontSize={8}>
+        <Text
+          key={profile.name}
+          fontFamily="notoSans"
+          fontWeight="bold"
+          fontSize={8}
+        >
           {profile.name}
         </Text>
       </Root>
