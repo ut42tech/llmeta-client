@@ -3,6 +3,7 @@
 import { Level } from "@/components/Level";
 import { LocalPlayer } from "@/components/player/LocalPlayer";
 import { PlayerHandle } from "@/components/player/Player";
+import { Players } from "@/components/player/Players";
 import { useColyseusRoom } from "@/utils/colyseus";
 import { useXRControllerInput } from "@react-three/viverse";
 import { useRef, RefObject } from "react";
@@ -44,6 +45,8 @@ type SceneContentProps = {
 const SceneContent = ({ name, isXR, input, PlayerRef }: SceneContentProps) => (
   <>
     <LocalPlayer name={name} isXR={isXR} input={input} PlayerRef={PlayerRef} />
+    <Players />
+
     <Level
       onTeleport={
         isXR && PlayerRef
