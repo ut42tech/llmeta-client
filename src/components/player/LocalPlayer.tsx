@@ -45,16 +45,27 @@ export const LocalPlayer = ({
   poseUpdateIntervalMs,
 }: LocalPlayerProps) => {
   const room = useColyseusRoom();
-  // XRモード変更時にプロフィール(isXR)をサーバーへ通知
+  // Hand tracking 検出（XR 時のみ true になり得る）
+  const leftHandState_global = useXRInputSourceState("hand", "left");
+  const rightHandState_global = useXRInputSourceState("hand", "right");
+  const isHandTracking = !!(
+    isXR &&
+    (leftHandState_global?.inputSource || rightHandState_global?.inputSource)
+  );
+
+  // XR / HandTracking のプロフィールをサーバーへ同期
   useEffect(() => {
     if (!room) return;
-    const payload: ProfileData = { isXR };
+    const payload: ProfileData = { isXR, isHandTracking };
     try {
       room.send(MessageType.CHANGE_PROFILE, payload);
     } catch (e) {
-      console.warn("Failed to send profile (isXR) to Colyseus:", e);
+      console.warn(
+        "Failed to send profile (isXR/isHandTracking) to Colyseus:",
+        e
+      );
     }
-  }, [room, isXR]);
+  }, [room, isXR, isHandTracking]);
   const { camera } = useThree();
   // XR時のみ更新される左右手ポーズの共有Ref
   const leftHandRef = useRef<{ pos: Vector3; euler: Euler; has: boolean }>({

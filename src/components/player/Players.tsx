@@ -16,6 +16,7 @@ export const Players = () => {
       id: string;
       name: string;
       isXR: boolean;
+      isHandTracking: boolean;
       position: [number, number, number]; // head(world)
       rotation: [number, number, number]; // head euler(YXZ)
       leftHandPosition?: [number, number, number];
@@ -57,6 +58,7 @@ export const Players = () => {
         id,
         name: id.slice(0, 8),
         isXR: !!p.isXR,
+        isHandTracking: !!p.isHandTracking,
         position: pos,
         rotation: rot,
         leftHandPosition: lhp as any,
@@ -78,6 +80,7 @@ export const Players = () => {
           key={rp.id}
           name={rp.name}
           isXR={rp.isXR}
+          isHandTracking={rp.isHandTracking}
           position={rp.position}
           rotation={rp.rotation}
           leftHandPosition={rp.leftHandPosition}
@@ -94,6 +97,7 @@ export const Players = () => {
 const RemotePlayerEntity = ({
   name,
   isXR,
+  isHandTracking,
   position,
   rotation,
   leftHandPosition,
@@ -105,6 +109,7 @@ const RemotePlayerEntity = ({
 }: {
   name: string;
   isXR: boolean;
+  isHandTracking: boolean;
   position: [number, number, number];
   rotation: [number, number, number];
   leftHandPosition?: [number, number, number];
@@ -129,8 +134,8 @@ const RemotePlayerEntity = ({
     <group ref={groupRef}>
       <RemotePlayer
         name={name}
-        showLeftHand={isXR && !!leftHandPosition}
-        showRightHand={isXR && !!rightHandPosition}
+        showLeftHand={isXR && isHandTracking && !!leftHandPosition}
+        showRightHand={isXR && isHandTracking && !!rightHandPosition}
         leftHandRef={leftRef}
         rightHandRef={rightRef}
       />
