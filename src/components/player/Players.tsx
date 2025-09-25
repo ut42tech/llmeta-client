@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { RemotePlayer } from "@/components/player/RemotePlayer";
 import { useColyseusRoom, useColyseusState } from "@/utils/colyseus";
-import { useFrame } from "@react-three/fiber";
-import { Euler, Group, Quaternion, Vector3 } from "three";
+import { useRemotePlayerInterpolation } from "@/hooks/useRemotePlayerInterpolation";
 
 export const Players = () => {
   const room = useColyseusRoom();
@@ -114,115 +113,17 @@ const RemotePlayerEntity = ({
   rightHandRotation?: [number, number, number];
   damping?: number;
 }) => {
-  const groupRef = useRef<Group>(null);
-  const targetPos = useRef(new Vector3(...position));
-  const targetQuat = useRef(
-    new Quaternion().setFromEuler(new Euler(rotation[0], rotation[1], 0, "YXZ"))
+  const { groupRef, leftRef, rightRef } = useRemotePlayerInterpolation(
+    {
+      position,
+      rotation,
+      leftHandPosition,
+      leftHandRotation,
+      rightHandPosition,
+      rightHandRotation,
+    },
+    damping
   );
-
-  // 手の補間ターゲット
-  const leftRef = useRef<Group>(null);
-  const leftPos = useRef(
-    leftHandPosition ? new Vector3(...leftHandPosition) : new Vector3()
-  );
-  const leftQuat = useRef(
-    new Quaternion().setFromEuler(
-      new Euler(
-        leftHandRotation?.[0] ?? 0,
-        leftHandRotation?.[1] ?? 0,
-        leftHandRotation?.[2] ?? 0,
-        "YXZ"
-      )
-    )
-  );
-  const rightRef = useRef<Group>(null);
-  const rightPos = useRef(
-    rightHandPosition ? new Vector3(...rightHandPosition) : new Vector3()
-  );
-  const rightQuat = useRef(
-    new Quaternion().setFromEuler(
-      new Euler(
-        rightHandRotation?.[0] ?? 0,
-        rightHandRotation?.[1] ?? 0,
-        rightHandRotation?.[2] ?? 0,
-        "YXZ"
-      )
-    )
-  );
-
-  // サーバー更新でターゲットを更新
-  useEffect(() => {
-    targetPos.current.set(position[0], position[1], position[2]);
-  }, [position]);
-
-  useEffect(() => {
-    const e = new Euler(rotation[0], rotation[1], 0, "YXZ");
-    targetQuat.current.setFromEuler(e);
-  }, [rotation]);
-
-  // 手のターゲット更新
-  useEffect(() => {
-    if (leftHandPosition) leftPos.current.set(...leftHandPosition);
-  }, [leftHandPosition]);
-  useEffect(() => {
-    if (leftHandRotation) {
-      const e = new Euler(
-        leftHandRotation[0],
-        leftHandRotation[1],
-        leftHandRotation[2],
-        "YXZ"
-      );
-      leftQuat.current.setFromEuler(e);
-    }
-  }, [leftHandRotation]);
-  useEffect(() => {
-    if (rightHandPosition) rightPos.current.set(...rightHandPosition);
-  }, [rightHandPosition]);
-  useEffect(() => {
-    if (rightHandRotation) {
-      const e = new Euler(
-        rightHandRotation[0],
-        rightHandRotation[1],
-        rightHandRotation[2],
-        "YXZ"
-      );
-      rightQuat.current.setFromEuler(e);
-    }
-  }, [rightHandRotation]);
-
-  // 毎フレーム、ターゲットへ指数補間
-  useFrame((_, dt) => {
-    const obj = groupRef.current;
-    if (!obj) return;
-    // 1 - exp(-k*dt) で時間独立の減衰係数を算出
-    const t = 1 - Math.exp(-damping * dt);
-    obj.position.lerp(targetPos.current, t);
-    obj.quaternion.slerp(targetQuat.current, t);
-
-    // hands
-    if (leftRef.current) {
-      // ワールド→ローカル（頭を親とする）
-      const l = leftRef.current;
-      const lp = leftPos.current.clone();
-      const lq = leftQuat.current.clone();
-      obj.worldToLocal(lp);
-      // 回転は親の逆回転を適用
-      const invParent = obj.quaternion.clone().invert();
-      lq.premultiply(invParent);
-      l.position.lerp(lp, t);
-      l.quaternion.slerp(lq, t);
-    }
-    if (rightRef.current) {
-      const r = rightRef.current;
-      const rp = rightPos.current.clone();
-      const rq = rightQuat.current.clone();
-      obj.worldToLocal(rp);
-      const invParent = obj.quaternion.clone().invert();
-      rq.premultiply(invParent);
-      r.position.lerp(rp, t);
-      r.quaternion.slerp(rq, t);
-    }
-  });
 
   return (
     <group ref={groupRef}>
