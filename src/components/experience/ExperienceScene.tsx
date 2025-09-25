@@ -16,22 +16,12 @@ type Props = {
 export const ExperienceScene = ({ mode }: Props) => {
   const room = useColyseusRoom();
   const name = room?.sessionId ?? "接続中...";
-
-  if (mode === "xr") return <XRInnerScene name={name} />;
-  return <DesktopInnerScene name={name} />;
-};
-
-type DesktopInnerSceneProps = { name: string };
-const DesktopInnerScene = ({ name }: DesktopInnerSceneProps) => (
-  <SceneContent name={name} isXR={false} />
-);
-
-type XRInnerSceneProps = { name: string };
-const XRInnerScene = ({ name }: XRInnerSceneProps) => {
+  const isXR = mode === "xr";
+  // XR であればセッション中に controller 入力が有効。常時呼び出しても XR ラップ下なので安全。
   const input = useXRControllerInput();
   const PlayerRef = useRef<PlayerHandle>(null);
   return (
-    <SceneContent name={name} isXR={true} input={input} PlayerRef={PlayerRef} />
+    <SceneContent name={name} isXR={isXR} input={input} PlayerRef={PlayerRef} />
   );
 };
 

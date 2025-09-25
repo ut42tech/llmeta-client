@@ -45,27 +45,18 @@ export const LocalPlayer = ({
   poseUpdateIntervalMs,
 }: LocalPlayerProps) => {
   const room = useColyseusRoom();
-  // Hand tracking 検出（XR 時のみ true になり得る）
-  const leftHandState_global = useXRInputSourceState("hand", "left");
-  const rightHandState_global = useXRInputSourceState("hand", "right");
-  const isHandTracking = !!(
-    isXR &&
-    (leftHandState_global?.inputSource || rightHandState_global?.inputSource)
-  );
-
-  // XR / HandTracking のプロフィールをサーバーへ同期
+  // 基本プロフィール同期（デスクトップ時は isHandTracking を false で明示）
   useEffect(() => {
     if (!room) return;
-    const payload: ProfileData = { isXR, isHandTracking };
+    const payload: ProfileData = isXR
+      ? { isXR }
+      : { isXR, isHandTracking: false };
     try {
       room.send(MessageType.CHANGE_PROFILE, payload);
     } catch (e) {
-      console.warn(
-        "Failed to send profile (isXR/isHandTracking) to Colyseus:",
-        e
-      );
+      console.warn("Failed to send profile (isXR) to Colyseus:", e);
     }
-  }, [room, isXR, isHandTracking]);
+  }, [room, isXR]);
   const { camera } = useThree();
   // XR時のみ更新される左右手ポーズの共有Ref
   const leftHandRef = useRef<{ pos: Vector3; euler: Euler; has: boolean }>({
@@ -152,6 +143,8 @@ export const LocalPlayer = ({
         poseUpdateIntervalMs={interval}
       >
         <PlayerTag name={name} />
+        {/* XR内のみ hand-tracking 状態を検出して同期 */}
+        {isXR ? <XRProfileSync isXR={isXR} /> : null}
         {isXR ? (
           <XRControllersProbe leftRef={leftHandRef} rightRef={rightHandRef} />
         ) : null}
@@ -159,6 +152,28 @@ export const LocalPlayer = ({
       </Player>
     </>
   );
+};
+
+// XR のみでマウントして hand-tracking の有無をサーバーへ同期
+const XRProfileSync = ({ isXR }: { isXR: boolean }) => {
+  const room = useColyseusRoom();
+  const leftHandState = useXRInputSourceState("hand", "left");
+  const rightHandState = useXRInputSourceState("hand", "right");
+  const isHandTracking = !!(
+    leftHandState?.inputSource || rightHandState?.inputSource
+  );
+
+  useEffect(() => {
+    if (!room) return;
+    try {
+      const payload: ProfileData = { isXR, isHandTracking };
+      room.send(MessageType.CHANGE_PROFILE, payload);
+    } catch (e) {
+      console.warn("Failed to send hand-tracking profile to Colyseus:", e);
+    }
+  }, [room, isXR, isHandTracking]);
+
+  return null;
 };
 
 // XRコンテキスト内でのみマウントし、左右手（コントローラーgrip）のワールド姿勢をRefに書き込む

@@ -12,20 +12,22 @@ type Props = {
 };
 
 export const ExperienceCanvas = ({ mode }: Props) => {
-  const xrStore = useMemo(() => {
-    if (mode !== "xr") return null;
-    return createXRStore({
-      offerSession: "immersive-vr",
-      hand: {
-        left: { teleportPointer: false },
-        right: { teleportPointer: true },
-      },
-      controller: {
-        left: { teleportPointer: false },
-        right: { teleportPointer: true },
-      },
-    });
-  }, [mode]);
+  // 常時 XR でラップするが、store は安定参照にして再作成を避ける
+  const xrStore = useMemo(
+    () =>
+      createXRStore({
+        offerSession: "immersive-vr",
+        hand: {
+          left: { teleportPointer: false },
+          right: { teleportPointer: true },
+        },
+        controller: {
+          left: { teleportPointer: false },
+          right: { teleportPointer: true },
+        },
+      }),
+    []
+  );
 
   return (
     <Canvas
@@ -41,13 +43,9 @@ export const ExperienceCanvas = ({ mode }: Props) => {
               bold: "fonts/NotoSansJP-Bold.json",
             }}
           >
-            {mode === "xr" && xrStore ? (
-              <XR store={xrStore}>
-                <ExperienceScene mode={mode} />
-              </XR>
-            ) : (
+            <XR store={xrStore}>
               <ExperienceScene mode={mode} />
-            )}
+            </XR>
           </FontFamilyProvider>
         </BvhPhysicsWorld>
       </Suspense>
