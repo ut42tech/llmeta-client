@@ -16,6 +16,7 @@ export const Players = () => {
     const list: Array<{
       id: string;
       name: string;
+      isXR: boolean;
       position: [number, number, number]; // head(world)
       rotation: [number, number, number]; // head euler(YXZ)
       leftHandPosition?: [number, number, number];
@@ -56,6 +57,7 @@ export const Players = () => {
       list.push({
         id,
         name: id.slice(0, 8),
+        isXR: !!p.isXR,
         position: pos,
         rotation: rot,
         leftHandPosition: lhp as any,
@@ -76,6 +78,7 @@ export const Players = () => {
         <RemotePlayerEntity
           key={rp.id}
           name={rp.name}
+          isXR={rp.isXR}
           position={rp.position}
           rotation={rp.rotation}
           leftHandPosition={rp.leftHandPosition}
@@ -91,6 +94,7 @@ export const Players = () => {
 // 各リモートプレイヤーの表示を補間して滑らかにするラッパー
 const RemotePlayerEntity = ({
   name,
+  isXR,
   position,
   rotation,
   leftHandPosition,
@@ -101,6 +105,7 @@ const RemotePlayerEntity = ({
   damping = 12,
 }: {
   name: string;
+  isXR: boolean;
   position: [number, number, number];
   rotation: [number, number, number];
   leftHandPosition?: [number, number, number];
@@ -221,24 +226,13 @@ const RemotePlayerEntity = ({
 
   return (
     <group ref={groupRef}>
-      <RemotePlayer name={name} />
-      {/* 簡易ハンド（球） */}
-      {leftHandPosition ? (
-        <group ref={leftRef}>
-          <mesh castShadow receiveShadow>
-            <sphereGeometry args={[0.08, 16, 16]} />
-            <meshStandardMaterial color={"deepskyblue"} />
-          </mesh>
-        </group>
-      ) : null}
-      {rightHandPosition ? (
-        <group ref={rightRef}>
-          <mesh castShadow receiveShadow>
-            <sphereGeometry args={[0.08, 16, 16]} />
-            <meshStandardMaterial color={"hotpink"} />
-          </mesh>
-        </group>
-      ) : null}
+      <RemotePlayer
+        name={name}
+        showLeftHand={isXR && !!leftHandPosition}
+        showRightHand={isXR && !!rightHandPosition}
+        leftHandRef={leftRef}
+        rightHandRef={rightRef}
+      />
     </group>
   );
 };

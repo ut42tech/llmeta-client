@@ -3,13 +3,18 @@
 import { Player } from "@/components/player/Player";
 import { PlayerTag } from "@/components/player/PlayerTag";
 import { PerspectiveCamera } from "@react-three/drei";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   FirstPersonCharacterCameraBehavior,
   LocomotionKeyboardInput,
   PointerLockInput,
 } from "@react-three/viverse";
-import { MessageType, MoveData, useColyseusRoom } from "@/utils/colyseus";
+import {
+  MessageType,
+  MoveData,
+  useColyseusRoom,
+  ProfileData,
+} from "@/utils/colyseus";
 import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Euler, Quaternion, Vector3, Object3D } from "three";
@@ -40,6 +45,16 @@ export const LocalPlayer = ({
   poseUpdateIntervalMs,
 }: LocalPlayerProps) => {
   const room = useColyseusRoom();
+  // XRモード変更時にプロフィール(isXR)をサーバーへ通知
+  useEffect(() => {
+    if (!room) return;
+    const payload: ProfileData = { isXR };
+    try {
+      room.send(MessageType.CHANGE_PROFILE, payload);
+    } catch (e) {
+      console.warn("Failed to send profile (isXR) to Colyseus:", e);
+    }
+  }, [room, isXR]);
   const { camera } = useThree();
   // XR時のみ更新される左右手ポーズの共有Ref
   const leftHandRef = useRef<{ pos: Vector3; euler: Euler; has: boolean }>({
