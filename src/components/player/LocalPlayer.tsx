@@ -155,16 +155,25 @@ const XRControllersProbe = ({
   leftRef,
   rightRef,
 }: {
-  leftRef: React.MutableRefObject<{ pos: Vector3; euler: Euler; has: boolean }>;
-  rightRef: React.MutableRefObject<{
+  leftRef: React.RefObject<{ pos: Vector3; euler: Euler; has: boolean }>;
+  rightRef: React.RefObject<{
     pos: Vector3;
     euler: Euler;
     has: boolean;
   }>;
 }) => {
   // v6 API: 入力ソース状態を取得
-  const leftState = useXRInputSourceState("controller", "left");
-  const rightState = useXRInputSourceState("controller", "right");
+  // コントローラー/ハンドを両方監視し、手があれば手を優先
+  const leftControllerState = useXRInputSourceState("controller", "left");
+  const rightControllerState = useXRInputSourceState("controller", "right");
+  const leftHandState = useXRInputSourceState("hand", "left");
+  const rightHandState = useXRInputSourceState("hand", "right");
+  const leftState = leftHandState?.inputSource
+    ? leftHandState
+    : leftControllerState;
+  const rightState = rightHandState?.inputSource
+    ? rightHandState
+    : rightControllerState;
 
   // XRSpace を使って grip/targetRay space の姿勢を Three の Object3D に反映
   const leftSpaceRef = useRef<Object3D>(null);
@@ -200,10 +209,14 @@ const XRControllersProbe = ({
     }
   });
 
-  // gripSpace が無ければ targetRaySpace をフォールバックに使用
+  // 手がある場合は wrist 関節の XRJointSpace を優先し、
+  // 無ければ gripSpace、さらに無ければ targetRaySpace を使用
   const leftSpace =
-    leftState?.inputSource?.gripSpace ?? leftState?.inputSource?.targetRaySpace;
+    (leftState?.inputSource as any)?.hand?.get?.("wrist") ??
+    leftState?.inputSource?.gripSpace ??
+    leftState?.inputSource?.targetRaySpace;
   const rightSpace =
+    (rightState?.inputSource as any)?.hand?.get?.("wrist") ??
     rightState?.inputSource?.gripSpace ??
     rightState?.inputSource?.targetRaySpace;
 
