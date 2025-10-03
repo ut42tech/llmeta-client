@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@colyseus/schema": "^3.0.62",
     "@pixiv/three-vrm": "^3.4.2",
     "@radix-ui/react-slot": "^1.2.3",
     "@react-three/drei": "^10.7.6",

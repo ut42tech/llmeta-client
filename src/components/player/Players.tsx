@@ -28,7 +28,7 @@ export const Players = () => {
     if (!state) return list;
 
     // MapSchema の反復取得
-    state.players.forEach((p, id) => {
+    state.players.forEach((p: any, id: string) => {
       if (id === localId) return;
       // サーバーのpositionは「頭（カメラ）」のワールド位置
       const pos: [number, number, number] = [
