@@ -128,11 +128,10 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
 
     const manager = v.expressionManager;
     if (manager) {
-      // Base expressions
-      manager.setValue("angry", angry);
-      manager.setValue("sad", sad);
-      manager.setValue("happy", happy);
       [
+        { name: "angry", value: angry },
+        { name: "sad", value: sad },
+        { name: "happy", value: happy },
         { name: "aa", value: aa },
         { name: "ih", value: ih },
         { name: "ee", value: ee },
