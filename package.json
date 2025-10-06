@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@colyseus/schema": "^3.0.62",
+    "@colyseus/schema": "^2.0.37",
     "@pixiv/three-vrm": "^3.4.2",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-label": "^2.1.7",

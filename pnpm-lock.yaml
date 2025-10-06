@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@colyseus/schema':
-        specifier: ^3.0.62
-        version: 3.0.62
+        specifier: ^2.0.37
+        version: 2.0.37
       '@pixiv/three-vrm':
         specifier: ^3.4.2
         version: 3.4.2(three@0.180.0)
@@ -281,10 +281,6 @@ packages:
 
   '@colyseus/schema@2.0.37':
     resolution: {integrity: sha512-+WXEux9DMSaTz9hZKabl6LBuzsxzt9EvOwhXJ/G4rPCaaVkJ+iLxRsq8VbL2ZCx18E/uQH6nLaNIQVqH9wEt8w==}
-    hasBin: true
-
-  '@colyseus/schema@3.0.62':
-    resolution: {integrity: sha512-zSR/zc5TKLHBoCEqZjaqNmUXih0lwNyUnHMonuVvBPR/YZIUk7SUNpYCA7S1weXFXyeOJsle6wpwl/eeKgLQaA==}
     hasBin: true
 
   '@dimforge/rapier3d-compat@0.12.0':
@@ -4468,8 +4464,6 @@ snapshots:
       statuses: 2.0.2
 
   '@colyseus/schema@2.0.37': {}
-
-  '@colyseus/schema@3.0.62': {}
 
   '@dimforge/rapier3d-compat@0.12.0': {}
 
