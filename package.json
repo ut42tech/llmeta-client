@@ -25,7 +25,7 @@
     "@react-three/viverse": "^0.1.17",
     "@react-three/xr": "^6.6.27",
     "@supabase/ssr": "^0.7.0",
-    "@supabase/supabase-js": "^2.58.0",
+    "@supabase/supabase-js": "^2.74.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "leva": "^0.10.0",
