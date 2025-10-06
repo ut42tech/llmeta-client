@@ -17,12 +17,27 @@ export const ExperienceScene = ({ mode }: Props) => {
   const room = useColyseusRoom();
   const name = room?.sessionId ?? "接続中...";
   const isXR = mode === "xr";
-  // XR であればセッション中に controller 入力が有効。常時呼び出しても XR ラップ下なので安全。
-  const input = useXRControllerInput();
   const PlayerRef = useRef<PlayerHandle>(null);
-  return (
-    <SceneContent name={name} isXR={isXR} input={input} PlayerRef={PlayerRef} />
-  );
+  if (isXR) {
+    const input = useXRControllerInput();
+    return (
+      <SceneContent
+        name={name}
+        isXR={isXR}
+        input={input}
+        PlayerRef={PlayerRef}
+      />
+    );
+  } else {
+    return (
+      <SceneContent
+        name={name}
+        isXR={isXR}
+        input={undefined}
+        PlayerRef={PlayerRef}
+      />
+    );
+  }
 };
 
 type SceneContentProps = {
