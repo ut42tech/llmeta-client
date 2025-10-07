@@ -56,7 +56,7 @@ export const Player = forwardRef<PlayerHandle, PlayerProps>(
       poseUpdateIntervalMs,
       ...rest
     },
-    ref
+    ref,
   ) => {
     const characterRef = useRef<Group>(null);
     const lastPoseSentAtRef = useRef<number>(0);
@@ -89,7 +89,7 @@ export const Player = forwardRef<PlayerHandle, PlayerProps>(
         getObject3D: () => characterRef.current,
         getPose,
       }),
-      [setPosition, getPose]
+      [setPosition, getPose],
     );
 
     useFrame(() => {
@@ -123,5 +123,5 @@ export const Player = forwardRef<PlayerHandle, PlayerProps>(
         {children}
       </SimpleCharacter>
     );
-  }
+  },
 );

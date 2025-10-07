@@ -9,13 +9,13 @@ type HasSceneLookup = { getObjectByName: (name: string) => any };
  */
 export function remapMixamoAnimationToVrm(
   vrm: any,
-  asset: HasAnimations & HasSceneLookup
+  asset: HasAnimations & HasSceneLookup,
 ) {
   if (!asset?.animations?.length)
     return new THREE.AnimationClip("vrmAnimation", 0, []);
   const baseClip = THREE.AnimationClip.findByName(
     asset.animations,
-    "mixamo.com"
+    "mixamo.com",
   );
   if (!baseClip) return new THREE.AnimationClip("vrmAnimation", 0, []);
   const clip = baseClip.clone();
@@ -75,22 +75,22 @@ export function remapMixamoAnimationToVrm(
           `${vrmNodeName}.${propertyName}`,
           track.times,
           track.values.map((v, i) =>
-            vrm?.meta?.metaVersion === "0" && i % 2 === 0 ? -v : v
-          )
-        )
+            vrm?.meta?.metaVersion === "0" && i % 2 === 0 ? -v : v,
+          ),
+        ),
       );
     } else if (track instanceof THREE.VectorKeyframeTrack) {
       const value = track.values.map(
         (v, i) =>
           (vrm?.meta?.metaVersion === "0" && i % 3 !== 1 ? -v : v) *
-          hipsPositionScale
+          hipsPositionScale,
       );
       tracks.push(
         new THREE.VectorKeyframeTrack(
           `${vrmNodeName}.${propertyName}`,
           track.times,
-          value
-        )
+          value,
+        ),
       );
     }
   });

@@ -124,7 +124,7 @@ const RemotePlayerEntity = ({
       rightHandPosition,
       rightHandRotation,
     },
-    damping
+    damping,
   );
 
   return (

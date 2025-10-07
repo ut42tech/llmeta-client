@@ -23,7 +23,7 @@ export type RemotePose = {
  */
 export function useRemotePlayerInterpolation(
   pose: RemotePose,
-  damping: number = 12
+  damping: number = 12,
 ) {
   const groupRef = useRef<Group>(null);
 
@@ -31,8 +31,8 @@ export function useRemotePlayerInterpolation(
   const targetPos = useRef(new Vector3(...pose.position));
   const targetQuat = useRef(
     new Quaternion().setFromEuler(
-      new Euler(pose.rotation[0], pose.rotation[1], 0, "YXZ")
-    )
+      new Euler(pose.rotation[0], pose.rotation[1], 0, "YXZ"),
+    ),
   );
 
   // 左手ターゲット（ワールド）
@@ -40,7 +40,7 @@ export function useRemotePlayerInterpolation(
   const leftPos = useRef(
     pose.leftHandPosition
       ? new Vector3(...pose.leftHandPosition)
-      : new Vector3()
+      : new Vector3(),
   );
   const leftQuat = useRef(
     new Quaternion().setFromEuler(
@@ -48,9 +48,9 @@ export function useRemotePlayerInterpolation(
         pose.leftHandRotation?.[0] ?? 0,
         pose.leftHandRotation?.[1] ?? 0,
         pose.leftHandRotation?.[2] ?? 0,
-        "YXZ"
-      )
-    )
+        "YXZ",
+      ),
+    ),
   );
 
   // 右手ターゲット（ワールド）
@@ -58,7 +58,7 @@ export function useRemotePlayerInterpolation(
   const rightPos = useRef(
     pose.rightHandPosition
       ? new Vector3(...pose.rightHandPosition)
-      : new Vector3()
+      : new Vector3(),
   );
   const rightQuat = useRef(
     new Quaternion().setFromEuler(
@@ -66,9 +66,9 @@ export function useRemotePlayerInterpolation(
         pose.rightHandRotation?.[0] ?? 0,
         pose.rightHandRotation?.[1] ?? 0,
         pose.rightHandRotation?.[2] ?? 0,
-        "YXZ"
-      )
-    )
+        "YXZ",
+      ),
+    ),
   );
 
   // サーバー更新でターゲットを更新
@@ -93,7 +93,7 @@ export function useRemotePlayerInterpolation(
         pose.leftHandRotation[0],
         pose.leftHandRotation[1],
         pose.leftHandRotation[2],
-        "YXZ"
+        "YXZ",
       );
       leftQuat.current.setFromEuler(e);
     }
@@ -109,7 +109,7 @@ export function useRemotePlayerInterpolation(
         pose.rightHandRotation[0],
         pose.rightHandRotation[1],
         pose.rightHandRotation[2],
-        "YXZ"
+        "YXZ",
       );
       rightQuat.current.setFromEuler(e);
     }

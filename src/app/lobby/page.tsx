@@ -80,7 +80,7 @@ export default function LobbyPage() {
       if (mode === "xr" && !xrSupported) return;
       setMode(mode);
     },
-    [xrSupported, setMode]
+    [xrSupported, setMode],
   );
 
   const handleStart = useCallback(() => {
@@ -123,7 +123,7 @@ export default function LobbyPage() {
                   isSelected ? "border-slate-400" : "border-transparent",
                   isDisabled
                     ? "opacity-40"
-                    : "cursor-pointer hover:border-slate-500"
+                    : "cursor-pointer hover:border-slate-500",
                 )}
                 role="radio"
                 aria-checked={isSelected}

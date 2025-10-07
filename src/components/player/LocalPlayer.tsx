@@ -142,12 +142,12 @@ export const LocalPlayer = ({
       leftHandRef,
       rightHandRef,
       isXR,
-    ]
+    ],
   );
 
   const interval = useMemo(
     () => poseUpdateIntervalMs ?? 50,
-    [poseUpdateIntervalMs]
+    [poseUpdateIntervalMs],
   );
 
   return (
@@ -239,7 +239,7 @@ const XRControllersProbe = ({
       const pos = leftSpaceRef.current.getWorldPosition(new Vector3());
       const rot = new Euler().setFromQuaternion(
         leftSpaceRef.current.getWorldQuaternion(new Quaternion()),
-        "YXZ"
+        "YXZ",
       );
       leftRef.current.pos.copy(pos);
       leftRef.current.euler.copy(rot);
@@ -253,7 +253,7 @@ const XRControllersProbe = ({
       const pos = rightSpaceRef.current.getWorldPosition(new Vector3());
       const rot = new Euler().setFromQuaternion(
         rightSpaceRef.current.getWorldQuaternion(new Quaternion()),
-        "YXZ"
+        "YXZ",
       );
       rightRef.current.pos.copy(pos);
       rightRef.current.euler.copy(rot);

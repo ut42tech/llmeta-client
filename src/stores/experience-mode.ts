@@ -30,6 +30,6 @@ export const useExperienceModeStore = create<ExperienceModeState>()(
         }
         return window.sessionStorage;
       }),
-    }
-  )
+    },
+  ),
 );

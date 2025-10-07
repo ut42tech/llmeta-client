@@ -29,7 +29,7 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
       (loader as any).register((parser: any) => {
         return new VRMLoaderPlugin(parser as any);
       });
-    }
+    },
   );
 
   // Current VRM instance extracted for clarity
@@ -59,7 +59,7 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
 
   const { actions } = useAnimations(
     [animationClipA, animationClipB, animationClipC],
-    vrm?.scene as any
+    vrm?.scene as any,
   );
 
   useEffect(() => {
@@ -116,7 +116,7 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
     manager: NonNullable<VRM["expressionManager"]>,
     name: string,
     value: number,
-    lerpFactor: number
+    lerpFactor: number,
   ) => {
     const current = manager.getValue(name) ?? 0;
     manager.setValue(name, lerp(current, value, lerpFactor));

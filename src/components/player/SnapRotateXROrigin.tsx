@@ -12,7 +12,7 @@ export const SnapRotateXROrigin = () => {
     if (ref.current == null) return;
 
     const current = Math.round(
-      rightController?.gamepad?.["xr-standard-thumbstick"]?.xAxis ?? 0
+      rightController?.gamepad?.["xr-standard-thumbstick"]?.xAxis ?? 0,
     );
     if (current < 0 && prev.current >= 0) {
       // Rotate left

@@ -26,7 +26,7 @@ export const ExperienceCanvas = ({ mode }: Props) => {
           right: { teleportPointer: true },
         },
       }),
-    []
+    [],
   );
 
   return (
