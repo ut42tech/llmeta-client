@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useEffect, useMemo } from "react";
 import type { Object3D } from "three";
+import * as THREE from "three";
 import { lerp } from "three/src/math/MathUtils.js";
 import { remapMixamoAnimationToVrm } from "@/utils/remapMixamoAnimationToVrm";
 
@@ -16,6 +17,10 @@ const ANIM = {
   THRILLER: "Thriller Part 2",
 } as const;
 
+type VRMUserData = {
+  vrm?: VRM;
+};
+
 type VRMAvatarProps = {
   avatar: string;
 } & Record<string, unknown>;
@@ -26,44 +31,49 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
     undefined,
     undefined,
     (loader) => {
-      (loader as any).register((parser: any) => {
-        return new VRMLoaderPlugin(parser as any);
+      // @ts-expect-error - GLTFLoader type mismatch between drei and three
+      loader.register((parser) => {
+        // @ts-expect-error - GLTFParser type mismatch between three-stdlib and @types/three
+        return new VRMLoaderPlugin(parser);
       });
     },
   );
 
   // Current VRM instance extracted for clarity
-  const vrm = (userData as any).vrm as VRM | undefined;
+  const vrm = (userData as VRMUserData).vrm;
 
   const assetA = useFBX("models/animations/Swing Dancing.fbx");
   const assetB = useFBX("models/animations/Thriller Part 2.fbx");
   const assetC = useFBX("models/animations/Breathing Idle.fbx");
 
   const animationClipA = useMemo(() => {
-    const clip = remapMixamoAnimationToVrm(vrm as any, assetA);
+    if (!vrm) return new THREE.AnimationClip("vrmAnimation", 0, []);
+    const clip = remapMixamoAnimationToVrm(vrm, assetA);
     clip.name = ANIM.SWING;
     return clip;
   }, [assetA, vrm]);
 
   const animationClipB = useMemo(() => {
-    const clip = remapMixamoAnimationToVrm(vrm as any, assetB);
+    if (!vrm) return new THREE.AnimationClip("vrmAnimation", 0, []);
+    const clip = remapMixamoAnimationToVrm(vrm, assetB);
     clip.name = ANIM.THRILLER;
     return clip;
   }, [assetB, vrm]);
 
   const animationClipC = useMemo(() => {
-    const clip = remapMixamoAnimationToVrm(vrm as any, assetC);
+    if (!vrm) return new THREE.AnimationClip("vrmAnimation", 0, []);
+    const clip = remapMixamoAnimationToVrm(vrm, assetC);
     clip.name = ANIM.IDLE;
     return clip;
   }, [assetC, vrm]);
 
   const { actions } = useAnimations(
     [animationClipA, animationClipB, animationClipC],
-    vrm?.scene as any,
+    vrm?.scene as Object3D | undefined,
   );
 
   useEffect(() => {
-    const v = (userData as any).vrm as VRM | undefined;
+    const v = (userData as VRMUserData).vrm;
     if (!v) return;
     VRMUtils.removeUnnecessaryVertices(scene as unknown as Object3D);
     VRMUtils.combineSkeletons(scene as unknown as Object3D);
@@ -71,9 +81,9 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
 
     // Disable frustum culling
     v.scene.traverse((obj) => {
-      (obj as any).frustumCulled = false;
+      obj.frustumCulled = false;
     });
-  }, [scene]);
+  }, [scene, userData]);
 
   const {
     aa,
@@ -123,7 +133,7 @@ export const VRMAvatar = ({ avatar, ...props }: VRMAvatarProps) => {
   };
 
   useFrame((_, delta) => {
-    const v = (userData as any).vrm as VRM | undefined;
+    const v = (userData as VRMUserData).vrm;
     if (!v) return;
 
     const manager = v.expressionManager;

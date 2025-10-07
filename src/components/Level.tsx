@@ -1,11 +1,10 @@
 import { Cloud, Clouds, Environment, Sky } from "@react-three/drei";
-import { Bloom, EffectComposer, SMAA, SSAO } from "@react-three/postprocessing";
 import { Physics } from "@react-three/rapier";
-import { BvhPhysicsBody, PrototypeBox } from "@react-three/viverse";
+import { BvhPhysicsBody } from "@react-three/viverse";
 import { TeleportTarget } from "@react-three/xr";
 import type { Vector3 } from "three";
 import * as THREE from "three";
-import { Map } from "@/components/Map";
+import { SceneMap } from "@/components/Map";
 
 type MainLevelProps = {
   onTeleport?: (position: Vector3) => void;
@@ -47,7 +46,7 @@ export const Level = (props: MainLevelProps) => {
             position={[0, -1, 0]}
           /> */}
           <Physics>
-            <Map
+            <SceneMap
               scale={[2, 2, 2]}
               position={[-2, -0.7, -16]}
               model={"models/city_scene_tokyo.glb"}

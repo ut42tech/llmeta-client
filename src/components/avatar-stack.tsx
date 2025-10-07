@@ -46,8 +46,8 @@ const AvatarStack = ({
       )}
       {...props}
     >
-      {shownAvatars.map(({ name, image }, index) => (
-        <Tooltip key={`${name}-${image}-${index}`}>
+      {shownAvatars.map(({ name, image }) => (
+        <Tooltip key={`${name}-${image}`}>
           <TooltipTrigger asChild>
             <Avatar className="hover:z-10">
               <AvatarImage src={image} />
@@ -76,8 +76,8 @@ const AvatarStack = ({
             </Avatar>
           </TooltipTrigger>
           <TooltipContent>
-            {hiddenAvatars.map(({ name }, index) => (
-              <p key={`${name}-${index}`}>{name}</p>
+            {hiddenAvatars.map(({ name }) => (
+              <p key={name}>{name}</p>
             ))}
           </TooltipContent>
         </Tooltip>

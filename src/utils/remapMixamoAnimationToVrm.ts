@@ -1,14 +1,17 @@
+import type { VRM, VRMHumanBoneName } from "@pixiv/three-vrm";
 import * as THREE from "three";
 import { mixamoVRMRigMap } from "@/utils/mixamoVRMRigMap";
 
 type HasAnimations = { animations?: THREE.AnimationClip[] };
-type HasSceneLookup = { getObjectByName: (name: string) => any };
+type HasSceneLookup = {
+  getObjectByName: (name: string) => THREE.Object3D | undefined;
+};
 
 /**
  * Mixamo の AnimationClip を VRM の Humanoid にリマップして返す。
  */
 export function remapMixamoAnimationToVrm(
-  vrm: any,
+  vrm: VRM,
   asset: HasAnimations & HasSceneLookup,
 ) {
   if (!asset?.animations?.length)
@@ -47,8 +50,10 @@ export function remapMixamoAnimationToVrm(
   clip.tracks.forEach((track: THREE.KeyframeTrack) => {
     const [mixamoRigName, propertyName] = track.name.split(".");
     const vrmBoneName = mixamoVRMRigMap[mixamoRigName];
-    const vrmNodeName =
-      vrm?.humanoid?.getNormalizedBoneNode?.(vrmBoneName)?.name;
+    const vrmNodeName = vrmBoneName
+      ? vrm?.humanoid?.getNormalizedBoneNode?.(vrmBoneName as VRMHumanBoneName)
+          ?.name
+      : undefined;
     const mixamoRigNode = asset.getObjectByName?.(mixamoRigName);
 
     if (!vrmNodeName || !mixamoRigNode || !propertyName) return;

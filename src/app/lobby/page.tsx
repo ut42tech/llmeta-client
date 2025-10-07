@@ -106,11 +106,7 @@ export default function LobbyPage() {
           </p>
         </header>
 
-        <section
-          className="grid gap-4 md:grid-cols-2"
-          role="radiogroup"
-          aria-label="参加モードの選択"
-        >
+        <div className="grid gap-4 md:grid-cols-2">
           {MODE_OPTIONS.map((option) => {
             const isSelected = selectedMode === option.id;
             const isDisabled = option.id === "xr" && !xrSupported;
@@ -170,7 +166,7 @@ export default function LobbyPage() {
               </Card>
             );
           })}
-        </section>
+        </div>
 
         {xrDisabledReason ? (
           <div className="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3 text-sm text-slate-400">

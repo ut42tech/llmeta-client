@@ -134,15 +134,7 @@ export const LocalPlayer = ({
         }
       }
     },
-    [
-      room,
-      onPoseUpdate,
-      getCameraEulerYXZ,
-      camera,
-      leftHandRef,
-      rightHandRef,
-      isXR,
-    ],
+    [room, onPoseUpdate, getCameraEulerYXZ, camera, isXR],
   );
 
   const interval = useMemo(
@@ -165,7 +157,7 @@ export const LocalPlayer = ({
         ref={isXR ? PlayerRef : null}
         input={isXR ? [input] : [LocomotionKeyboardInput, PointerLockInput]}
         cameraBehavior={isXR ? false : FirstPersonCharacterCameraBehavior}
-        model={isXR ? false : false}
+        model={false}
         onPoseUpdate={mergedOnPoseUpdate}
         poseUpdateIntervalMs={interval}
       >

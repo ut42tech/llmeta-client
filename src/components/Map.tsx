@@ -7,7 +7,7 @@ type MapProps = {
   model: string;
 } & React.JSX.IntrinsicElements["group"];
 
-export const Map = ({ model, ...props }: MapProps) => {
+export const SceneMap = ({ model, ...props }: MapProps) => {
   const { scene, animations } = useGLTF(model);
   const group = useRef<THREE.Object3D>(null);
   const { actions } = useAnimations(animations, group);
