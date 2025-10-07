@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import type { AvatarInfo } from "@/types/user";
 
 const avatarStackVariants = cva("flex -space-x-4 -space-y-4", {
   variants: {
@@ -23,7 +24,7 @@ const avatarStackVariants = cva("flex -space-x-4 -space-y-4", {
 export interface AvatarStackProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof avatarStackVariants> {
-  avatars: { name: string; image: string }[];
+  avatars: AvatarInfo[];
   maxAvatarsAmount?: number;
 }
 

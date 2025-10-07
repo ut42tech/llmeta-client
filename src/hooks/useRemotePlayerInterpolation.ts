@@ -1,19 +1,11 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import { Euler, type Group, Quaternion, Vector3 } from "three";
+import type { PlayerPose } from "@/types/player";
 
 const DEFAULT_LEFT_LOCAL = new Vector3(-0.3, -0.5, -0.3);
 const DEFAULT_RIGHT_LOCAL = new Vector3(0.3, -0.5, -0.3);
 const IDENTITY_QUAT = new Quaternion();
-
-export type RemotePose = {
-  position: [number, number, number];
-  rotation: [number, number, number]; // Euler(YXZ)想定、頭のZは0固定
-  leftHandPosition?: [number, number, number];
-  leftHandRotation?: [number, number, number]; // Euler(YXZ)
-  rightHandPosition?: [number, number, number];
-  rightHandRotation?: [number, number, number]; // Euler(YXZ)
-};
 
 /**
  * ネットワーク受信した頭および両手のワールド座標系姿勢を、
@@ -22,7 +14,7 @@ export type RemotePose = {
  * - 両手はワールド -> ローカル（親: 頭）変換を行って補間
  */
 export function useRemotePlayerInterpolation(
-  pose: RemotePose,
+  pose: PlayerPose,
   damping: number = 12,
 ) {
   const groupRef = useRef<Group>(null);
