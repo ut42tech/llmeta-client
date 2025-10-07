@@ -1,17 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { RealtimeUser } from "@/types/user";
 import { useCurrentUserImage } from "@/hooks/useCurrentUserImage";
 import { useCurrentUserName } from "@/hooks/useCurrentUserName";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
-
-export type RealtimeUser = {
-  id: string;
-  name: string;
-  image: string;
-};
 
 export const useRealtimePresenceRoom = (roomName: string) => {
   const currentUserImage = useCurrentUserImage();

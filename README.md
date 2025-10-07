@@ -48,7 +48,22 @@ Project LLMeta のフロントエンドアプリケーションです。3D 空�
 ## ディレクトリ構成
 
 - **`src/app`**: アプリケーションの主要なページコンポーネント。
+  - `experience/`: 体験ページ
+  - `lobby/`: ロビーページ
+  - `vrm/`: VRMアバタープレビューページ
 - **`src/components`**: 再利用可能な React コンポーネント。
-- **`src/hooks`**: Colyseus との接続ライフサイクルなど、カスタム React フック。
+  - `experience/`: 体験関連のコンポーネント
+  - `main/`: メインページ関連のコンポーネント
+  - `player/`: プレイヤー関連のコンポーネント
+  - `scene/`: 3Dシーン関連のコンポーネント
+  - `ui/`: UI コンポーネント（Shadcn/ui）
+  - `vrm/`: VRMアバター関連のコンポーネント
+- **`src/hooks`**: カスタム React フック（camelCase命名規則）。
+  - Colyseusとの接続ライフサイクル、リアルタイムプレゼンス、XRサポートなど
+- **`src/types`**: 共有型定義。
+  - `player.ts`: プレイヤー関連の型
+  - `user.ts`: ユーザー関連の型
+- **`src/stores`**: Zustandストア。
 - **`src/utils`**: ユーティリティ関数。
+- **`src/lib`**: ライブラリ設定（Supabaseなど）。
 - **`public`**: 3D モデルやフォントなどの静的アセット。

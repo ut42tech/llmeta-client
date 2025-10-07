@@ -3,21 +3,11 @@
 import { useMemo } from "react";
 import { RemotePlayer } from "@/components/player/RemotePlayer";
 import { useRemotePlayerInterpolation } from "@/hooks/useRemotePlayerInterpolation";
+import type {
+  ColyseusPlayerState,
+  RemotePlayerData,
+} from "@/types/player";
 import { useColyseusRoom, useColyseusState } from "@/utils/colyseus";
-
-/**
- * Colyseus サーバーから送信されるプレイヤー状態の型定義
- */
-interface ColyseusPlayerState {
-  isXR?: boolean;
-  isHandTracking?: boolean;
-  position?: { x: number; y: number; z: number };
-  rotation?: { x: number; y: number; z: number };
-  leftHandPosition?: { x: number; y: number; z: number };
-  leftHandRotation?: { x: number; y: number; z: number };
-  rightHandPosition?: { x: number; y: number; z: number };
-  rightHandRotation?: { x: number; y: number; z: number };
-}
 
 export const Players = () => {
   const room = useColyseusRoom();
@@ -26,18 +16,7 @@ export const Players = () => {
   const localId = room?.sessionId;
 
   const remotes = useMemo(() => {
-    const list: Array<{
-      id: string;
-      name: string;
-      isXR: boolean;
-      isHandTracking: boolean;
-      position: [number, number, number]; // head(world)
-      rotation: [number, number, number]; // head euler(YXZ)
-      leftHandPosition?: [number, number, number];
-      leftHandRotation?: [number, number, number];
-      rightHandPosition?: [number, number, number];
-      rightHandRotation?: [number, number, number];
-    }> = [];
+    const list: RemotePlayerData[] = [];
 
     if (!state) return list;
 
