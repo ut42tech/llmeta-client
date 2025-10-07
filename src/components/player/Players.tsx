@@ -3,7 +3,7 @@
 import { RemotePlayer } from "@/components/player/RemotePlayer";
 import { useRemotePlayerInterpolation } from "@/hooks/useRemotePlayerInterpolation";
 import type { ColyseusPlayerState, RemotePlayerData } from "@/types/player";
-import { useColyseusRoom, useColyseusState } from "@/utils/colyseus";
+import { useColyseusRoom } from "@/utils/colyseus";
 
 export const Players = () => {
   useSyncPlayers();
