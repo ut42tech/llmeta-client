@@ -31,12 +31,12 @@ export function useRemotePlayerInterpolation(
     )
   );
 
-  // 左手ターゲット（ワールド）
+  // 左手ターゲット（ワールド）: データがない場合はデフォルト位置（親の左側・腰レベル）
   const leftRef = useRef<Group>(null);
   const leftPos = useRef(
     pose.leftHandPosition
       ? new Vector3(...pose.leftHandPosition)
-      : new Vector3()
+      : new Vector3(-0.3, 1.0, 0) // デフォルト位置
   );
   const leftQuat = useRef(
     new Quaternion().setFromEuler(
@@ -49,12 +49,12 @@ export function useRemotePlayerInterpolation(
     )
   );
 
-  // 右手ターゲット（ワールド）
+  // 右手ターゲット（ワールド）: データがない場合はデフォルト位置（親の右側・腰レベル）
   const rightRef = useRef<Group>(null);
   const rightPos = useRef(
     pose.rightHandPosition
       ? new Vector3(...pose.rightHandPosition)
-      : new Vector3()
+      : new Vector3(0.3, 1.0, 0) // デフォルト位置
   );
   const rightQuat = useRef(
     new Quaternion().setFromEuler(
@@ -118,26 +118,44 @@ export function useRemotePlayerInterpolation(
     obj.position.lerp(targetPos.current, t);
     obj.quaternion.slerp(targetQuat.current, t);
 
-    // hands: ワールド→ローカル（頭を親とする）
+    // hands: データがある場合はワールド→ローカル（頭を親とする）に変換して補間
+    // データがない場合は頭の相対位置（デフォルト）に配置
     if (leftRef.current) {
       const l = leftRef.current;
-      const lp = leftPos.current.clone();
-      const lq = leftQuat.current.clone();
-      obj.worldToLocal(lp);
-      const invParent = obj.quaternion.clone().invert();
-      lq.premultiply(invParent);
-      l.position.lerp(lp, t);
-      l.quaternion.slerp(lq, t);
+      if (pose.leftHandPosition && pose.leftHandRotation) {
+        // データがある場合
+        const lp = leftPos.current.clone();
+        const lq = leftQuat.current.clone();
+        obj.worldToLocal(lp);
+        const invParent = obj.quaternion.clone().invert();
+        lq.premultiply(invParent);
+        l.position.lerp(lp, t);
+        l.quaternion.slerp(lq, t);
+      } else {
+        // データがない場合はデフォルト相対位置
+        const defaultLocal = new Vector3(-0.3, -0.5, -0.3);
+        l.position.lerp(defaultLocal, t);
+        l.quaternion.slerp(new Quaternion(), t);
+      }
     }
+
     if (rightRef.current) {
       const r = rightRef.current;
-      const rp = rightPos.current.clone();
-      const rq = rightQuat.current.clone();
-      obj.worldToLocal(rp);
-      const invParent = obj.quaternion.clone().invert();
-      rq.premultiply(invParent);
-      r.position.lerp(rp, t);
-      r.quaternion.slerp(rq, t);
+      if (pose.rightHandPosition && pose.rightHandRotation) {
+        // データがある場合
+        const rp = rightPos.current.clone();
+        const rq = rightQuat.current.clone();
+        obj.worldToLocal(rp);
+        const invParent = obj.quaternion.clone().invert();
+        rq.premultiply(invParent);
+        r.position.lerp(rp, t);
+        r.quaternion.slerp(rq, t);
+      } else {
+        // データがない場合はデフォルト相対位置
+        const defaultLocal = new Vector3(0.3, -0.5, -0.3);
+        r.position.lerp(defaultLocal, t);
+        r.quaternion.slerp(new Quaternion(), t);
+      }
     }
   });
 

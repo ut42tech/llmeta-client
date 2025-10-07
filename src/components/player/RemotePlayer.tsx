@@ -30,10 +30,24 @@ export const RemotePlayer = ({
 }: RemotePlayerProps) => {
   return (
     <group>
+      {/* 頭部 */}
       <mesh castShadow receiveShadow>
         <boxGeometry args={[0.5, 0.5, 0.5]} />
         <meshStandardMaterial color={"orange"} transparent opacity={0.8} />
       </mesh>
+
+      {/* 正面方向インジケーター（プレイヤーの前方に配置） */}
+      <group position={[0, 0, -0.4]}>
+        {/* 三角形（矢印）で正面を示す */}
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+          <coneGeometry args={[0.15, 0.3, 3]} />
+          <meshStandardMaterial
+            color={"yellow"}
+            emissive={"yellow"}
+            emissiveIntensity={0.5}
+          />
+        </mesh>
+      </group>
 
       <PlayerTag name={name} />
 

@@ -80,7 +80,6 @@ export const Players = () => {
           key={rp.id}
           name={rp.name}
           isXR={rp.isXR}
-          isHandTracking={rp.isHandTracking}
           position={rp.position}
           rotation={rp.rotation}
           leftHandPosition={rp.leftHandPosition}
@@ -97,7 +96,6 @@ export const Players = () => {
 const RemotePlayerEntity = ({
   name,
   isXR,
-  isHandTracking,
   position,
   rotation,
   leftHandPosition,
@@ -109,7 +107,6 @@ const RemotePlayerEntity = ({
 }: {
   name: string;
   isXR: boolean;
-  isHandTracking: boolean;
   position: [number, number, number];
   rotation: [number, number, number];
   leftHandPosition?: [number, number, number];
@@ -134,8 +131,8 @@ const RemotePlayerEntity = ({
     <group ref={groupRef}>
       <RemotePlayer
         name={name}
-        showLeftHand={isXR && isHandTracking && !!leftHandPosition}
-        showRightHand={isXR && isHandTracking && !!rightHandPosition}
+        showLeftHand={isXR && !!leftHandPosition}
+        showRightHand={isXR && !!rightHandPosition}
         leftHandRef={leftRef}
         rightHandRef={rightRef}
       />
