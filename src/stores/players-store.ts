@@ -1,17 +1,6 @@
 import { create } from "zustand";
 import type { Player } from "@/utils/colyseus";
-
-// NOTE: This type is duplicated from `useRemotePlayerInterpolation.ts`.
-// It should be centralized in a future refactoring.
-export type RemotePose = {
-  position: [number, number, number];
-  rotation: [number, number, number];
-  leftHandPosition?: [number, number, number];
-  leftHandRotation?: [number, number, number];
-  rightHandPosition?: [number, number, number];
-  rightHandRotation?: [number, number, number];
-};
-
+import type { RemotePose } from "@/types/remote-player";
 export type RemotePlayer = {
   isXR: boolean;
   isHandTracking: boolean;
