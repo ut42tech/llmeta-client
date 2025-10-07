@@ -93,8 +93,6 @@ export const LocalPlayer = ({
           };
 
           if (isXR) {
-            // 子コンポーネントで更新される手の最新値を取り込む（コントローラー/ハンドトラッキング両対応）
-            // 手が検出されていない場合はカメラ基準のデフォルト位置を送信
             if (leftHandRef.current.has) {
               const lp = leftHandRef.current.pos;
               const le = leftHandRef.current.euler;

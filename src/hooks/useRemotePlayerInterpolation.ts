@@ -2,6 +2,10 @@ import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Euler, Group, Quaternion, Vector3 } from "three";
 
+const DEFAULT_LEFT_LOCAL = new Vector3(-0.3, -0.5, -0.3);
+const DEFAULT_RIGHT_LOCAL = new Vector3(0.3, -0.5, -0.3);
+const IDENTITY_QUAT = new Quaternion();
+
 export type RemotePose = {
   position: [number, number, number];
   rotation: [number, number, number]; // Euler(YXZ)想定、頭のZは0固定
@@ -12,10 +16,10 @@ export type RemotePose = {
 };
 
 /**
- * ネットワーク受信したワールド座標系の頭・両手の姿勢を、
+ * ネットワーク受信した頭および両手のワールド座標系姿勢を、
  * Three.js Group に指数補間で適用するためのフック。
  * - 頭（groupRef）はワールド目標へ直接補間
- * - 両手はワールド→ローカル（親: 頭）へ変換しつつ補間
+ * - 両手はワールド -> ローカル（親: 頭）変換を行って補間
  */
 export function useRemotePlayerInterpolation(
   pose: RemotePose,
@@ -31,12 +35,12 @@ export function useRemotePlayerInterpolation(
     )
   );
 
-  // 左手ターゲット（ワールド）: データがない場合はデフォルト位置（親の左側・腰レベル）
+  // 左手ターゲット（ワールド）
   const leftRef = useRef<Group>(null);
   const leftPos = useRef(
     pose.leftHandPosition
       ? new Vector3(...pose.leftHandPosition)
-      : new Vector3(-0.3, 1.0, 0) // デフォルト位置
+      : new Vector3()
   );
   const leftQuat = useRef(
     new Quaternion().setFromEuler(
@@ -49,12 +53,12 @@ export function useRemotePlayerInterpolation(
     )
   );
 
-  // 右手ターゲット（ワールド）: データがない場合はデフォルト位置（親の右側・腰レベル）
+  // 右手ターゲット（ワールド）
   const rightRef = useRef<Group>(null);
   const rightPos = useRef(
     pose.rightHandPosition
       ? new Vector3(...pose.rightHandPosition)
-      : new Vector3(0.3, 1.0, 0) // デフォルト位置
+      : new Vector3()
   );
   const rightQuat = useRef(
     new Quaternion().setFromEuler(
@@ -79,7 +83,9 @@ export function useRemotePlayerInterpolation(
 
   // 手のターゲット更新
   useEffect(() => {
-    if (pose.leftHandPosition) leftPos.current.set(...pose.leftHandPosition);
+    if (pose.leftHandPosition) {
+      leftPos.current.set(...pose.leftHandPosition);
+    }
   }, [pose.leftHandPosition]);
   useEffect(() => {
     if (pose.leftHandRotation) {
@@ -93,7 +99,9 @@ export function useRemotePlayerInterpolation(
     }
   }, [pose.leftHandRotation]);
   useEffect(() => {
-    if (pose.rightHandPosition) rightPos.current.set(...pose.rightHandPosition);
+    if (pose.rightHandPosition) {
+      rightPos.current.set(...pose.rightHandPosition);
+    }
   }, [pose.rightHandPosition]);
   useEffect(() => {
     if (pose.rightHandRotation) {
@@ -123,7 +131,6 @@ export function useRemotePlayerInterpolation(
     if (leftRef.current) {
       const l = leftRef.current;
       if (pose.leftHandPosition && pose.leftHandRotation) {
-        // データがある場合
         const lp = leftPos.current.clone();
         const lq = leftQuat.current.clone();
         obj.worldToLocal(lp);
@@ -132,17 +139,14 @@ export function useRemotePlayerInterpolation(
         l.position.lerp(lp, t);
         l.quaternion.slerp(lq, t);
       } else {
-        // データがない場合はデフォルト相対位置
-        const defaultLocal = new Vector3(-0.3, -0.5, -0.3);
-        l.position.lerp(defaultLocal, t);
-        l.quaternion.slerp(new Quaternion(), t);
+        l.position.lerp(DEFAULT_LEFT_LOCAL, t);
+        l.quaternion.slerp(IDENTITY_QUAT, t);
       }
     }
 
     if (rightRef.current) {
       const r = rightRef.current;
       if (pose.rightHandPosition && pose.rightHandRotation) {
-        // データがある場合
         const rp = rightPos.current.clone();
         const rq = rightQuat.current.clone();
         obj.worldToLocal(rp);
@@ -151,10 +155,8 @@ export function useRemotePlayerInterpolation(
         r.position.lerp(rp, t);
         r.quaternion.slerp(rq, t);
       } else {
-        // データがない場合はデフォルト相対位置
-        const defaultLocal = new Vector3(0.3, -0.5, -0.3);
-        r.position.lerp(defaultLocal, t);
-        r.quaternion.slerp(new Quaternion(), t);
+        r.position.lerp(DEFAULT_RIGHT_LOCAL, t);
+        r.quaternion.slerp(IDENTITY_QUAT, t);
       }
     }
   });
