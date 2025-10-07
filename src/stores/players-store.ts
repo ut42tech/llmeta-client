@@ -17,16 +17,9 @@ type PlayersState = {
  * Converts a Colyseus Player object to a client-side RemotePlayer object.
  */
 const convertPlayerToRemotePlayer = (player: Player): RemotePlayer => {
-  // Heuristic: If hand position is all zero, assume it's not tracked.
-  // This allows VR controllers to work even if `isHandTracking` is false.
-  const leftHandTracked =
-    player.leftHandPosition.x !== 0 ||
-    player.leftHandPosition.y !== 0 ||
-    player.leftHandPosition.z !== 0;
-  const rightHandTracked =
-    player.rightHandPosition.x !== 0 ||
-    player.rightHandPosition.y !== 0 ||
-    player.rightHandPosition.z !== 0;
+  // Use explicit tracking flags from the server for hand tracking detection.
+  const leftHandTracked = player.leftHandTracked ?? false;
+  const rightHandTracked = player.rightHandTracked ?? false;
 
   return {
     isXR: player.isXR,
