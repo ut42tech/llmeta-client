@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { AvatarStack } from "@/components/avatar-stack";
-import { useRealtimePresenceRoom } from "@/hooks/use-realtime-presence-room";
+import { AvatarStack } from "@/components/AvatarStack";
+import { useRealtimePresenceRoom } from "@/hooks/useRealtimePresenceRoom";
 
 export const RealtimeAvatarStack = ({ roomName }: { roomName: string }) => {
   const { users: usersMap } = useRealtimePresenceRoom(roomName);

@@ -15,10 +15,21 @@ This is a Next.js project for a metaverse experience, leveraging AI for new comm
 
 ### Architecture:
 
-- **`src/app`:** Contains the main application pages, including the home page (`/`), the main experience (`/experience`), and a VRM avatar preview page (`/vrm`).
-- **`src/components`:** Reusable React components, organized by feature (e.g., `experience`, `main`, `player`, `vrm`).
-- **`src/hooks`:** Custom React hooks for managing side effects, such as the Colyseus connection lifecycle (`useColyseusLifecycle.ts`).
+- **`src/app`:** Contains the main application pages, including the home page (`/`), lobby (`/lobby`), experience (`/experience`), and VRM avatar preview page (`/vrm`).
+- **`src/components`:** Reusable React components, organized by feature:
+  - `experience/`: Experience-specific components
+  - `main/`: Main page components
+  - `player/`: Player-related components
+  - `scene/`: 3D scene components (Level, SceneMap)
+  - `ui/`: UI components (Shadcn/ui)
+  - `vrm/`: VRM avatar components
+- **`src/hooks`:** Custom React hooks (camelCase naming convention) for managing side effects, such as the Colyseus connection lifecycle (`useColyseusLifecycle.ts`), realtime presence (`useRealtimePresenceRoom.ts`), and XR support detection (`useXrSupport.ts`).
+- **`src/types`:** Centralized TypeScript type definitions:
+  - `player.ts`: Player and multiplayer-related types
+  - `user.ts`: User and UI-related types
+- **`src/stores`:** Zustand stores for global state management.
 - **`src/utils`:** Utility functions, including the Colyseus client setup (`colyseus.ts`).
+- **`src/lib`:** Library configurations (e.g., Supabase client).
 - **`public`:** Static assets, including 3D models (`.glb`, `.vrm`) and fonts.
 
 ## Building and Running
@@ -63,7 +74,13 @@ yarn lint
 
 ## Development Conventions
 
-- **Styling:** The project uses Tailwind CSS for styling, with some components from Radix UI.
-- **State Management:** Component-level state is managed with React hooks. Global state for the multiplayer experience is managed by Colyseus.
+- **Naming Conventions:**
+  - Hook files: camelCase (e.g., `useColyseusLifecycle.ts`, `useRealtimePresenceRoom.ts`)
+  - Component files: PascalCase (e.g., `AvatarStack.tsx`, `RemotePlayer.tsx`)
+  - Type files: PascalCase (e.g., `player.ts`, `user.ts`)
+  - Utility files: camelCase (e.g., `colyseus.ts`, `utils.ts`)
+- **Styling:** The project uses Tailwind CSS for styling, with components from Radix UI (Shadcn/ui).
+- **State Management:** Component-level state is managed with React hooks. Global state for the multiplayer experience is managed by Colyseus. Application-wide state uses Zustand stores.
 - **3D:** The 3D scenes are built with `@react-three/fiber` and `@react-three/drei`, following a declarative, component-based approach.
 - **Multiplayer:** The connection to the Colyseus server is managed by the `useColyseusLifecycle` hook, which automatically connects and disconnects from the room.
+- **Type Definitions:** Shared types are centralized in the `src/types` directory for better maintainability and reusability.

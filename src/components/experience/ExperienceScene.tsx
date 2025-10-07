@@ -3,7 +3,7 @@
 import { useXRControllerInput } from "@react-three/viverse";
 import { type RefObject, useRef } from "react";
 import type { Vector3 } from "three";
-import { Level } from "@/components/Level";
+import { Level } from "@/components/scene/Level";
 import { LocalPlayer } from "@/components/player/LocalPlayer";
 import type { PlayerHandle } from "@/components/player/Player";
 import { Players } from "@/components/player/Players";
