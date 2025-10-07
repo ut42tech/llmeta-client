@@ -1,7 +1,7 @@
 "use client";
 
-import { Level } from "@/components/Level";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { Level } from "@/components/Level";
 
 export const MainScene = () => {
   return (

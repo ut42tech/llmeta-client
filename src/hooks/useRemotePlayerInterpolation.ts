@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Euler, Group, Quaternion, Vector3 } from "three";
+import { useEffect, useRef } from "react";
+import { Euler, type Group, Quaternion, Vector3 } from "three";
 
 const DEFAULT_LEFT_LOCAL = new Vector3(-0.3, -0.5, -0.3);
 const DEFAULT_RIGHT_LOCAL = new Vector3(0.3, -0.5, -0.3);

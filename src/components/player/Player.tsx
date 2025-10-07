@@ -1,15 +1,15 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
+import { SimpleCharacter } from "@react-three/viverse";
 import {
-  PropsWithChildren,
   forwardRef,
+  type PropsWithChildren,
   useCallback,
   useImperativeHandle,
   useRef,
 } from "react";
-import { Group, Vector3, Euler, Quaternion } from "three";
-import { SimpleCharacter } from "@react-three/viverse";
+import { Euler, type Group, Quaternion, Vector3 } from "three";
 
 /** サーバー送信用などに扱いやすい数値スナップショット */
 export type PlayerTransformSnapshot = {

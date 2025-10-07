@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useXRInputSourceState, XROrigin } from "@react-three/xr";
 import { useRef } from "react";
-import { Group } from "three";
+import type { Group } from "three";
 
 export const SnapRotateXROrigin = () => {
   const ref = useRef<Group>(null);

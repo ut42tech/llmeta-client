@@ -1,15 +1,15 @@
 "use client";
 
-import { ExperienceCanvas } from "@/components/experience/ExperienceCanvas";
 import { Loader } from "@react-three/drei";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { MonitorSmartphone } from "lucide-react";
-import { useXrSupport } from "@/hooks/useXrSupport";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ExperienceCanvas } from "@/components/experience/ExperienceCanvas";
 import { useColyseusLifecycle } from "@/hooks/useColyseusLifecycle";
+import { useXrSupport } from "@/hooks/useXrSupport";
 import {
-  useExperienceModeStore,
   type ExperienceMode,
+  useExperienceModeStore,
 } from "@/stores/experience-mode";
 
 export default function ExperiencePage() {

@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 import { RemotePlayer } from "@/components/player/RemotePlayer";
-import { useColyseusRoom, useColyseusState } from "@/utils/colyseus";
 import { useRemotePlayerInterpolation } from "@/hooks/useRemotePlayerInterpolation";
+import { useColyseusRoom, useColyseusState } from "@/utils/colyseus";
 
 export const Players = () => {
   const room = useColyseusRoom();

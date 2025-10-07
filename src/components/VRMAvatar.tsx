@@ -1,12 +1,12 @@
-import { remapMixamoAnimationToVrm } from "@/utils/remapMixamoAnimationToVrm";
-import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
 import type { VRM } from "@pixiv/three-vrm";
+import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
 import { useAnimations, useFBX, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useEffect, useMemo } from "react";
-import { Object3D } from "three";
+import type { Object3D } from "three";
 import { lerp } from "three/src/math/MathUtils.js";
+import { remapMixamoAnimationToVrm } from "@/utils/remapMixamoAnimationToVrm";
 
 // Animation label constants
 const ANIM = {

@@ -1,6 +1,6 @@
-import { VRMScene } from "@/components/vrm/VRMScene";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
+import { VRMScene } from "@/components/vrm/VRMScene";
 
 export const VRMCanvas = () => {
   return (

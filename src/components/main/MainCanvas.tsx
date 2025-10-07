@@ -1,9 +1,9 @@
 "use client";
 
-import { MainScene } from "@/components/main/MainScene";
 import { Canvas } from "@react-three/fiber";
 import { BvhPhysicsWorld } from "@react-three/viverse";
 import { Suspense } from "react";
+import { MainScene } from "@/components/main/MainScene";
 
 export const MainCanvas = () => {
   return (

@@ -1,24 +1,24 @@
 "use client";
 
-import { Player } from "@/components/player/Player";
-import { PlayerTag } from "@/components/player/PlayerTag";
 import { PerspectiveCamera } from "@react-three/drei";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import {
   FirstPersonCharacterCameraBehavior,
   LocomotionKeyboardInput,
   PointerLockInput,
 } from "@react-three/viverse";
+import { useXRInputSourceState, XRSpace } from "@react-three/xr";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Euler, type Object3D, Quaternion, Vector3 } from "three";
+import { Player } from "@/components/player/Player";
+import { PlayerTag } from "@/components/player/PlayerTag";
+import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
 import {
   MessageType,
-  MoveData,
+  type MoveData,
+  type ProfileData,
   useColyseusRoom,
-  ProfileData,
 } from "@/utils/colyseus";
-import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
-import { useFrame, useThree } from "@react-three/fiber";
-import { Euler, Quaternion, Vector3, Object3D } from "three";
-import { XRSpace, useXRInputSourceState } from "@react-three/xr";
 
 type LocalPlayerProps = {
   name: string;

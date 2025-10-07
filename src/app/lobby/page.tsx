@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { MonitorSmartphone, ScanEye, UserCircle2, Scan } from "lucide-react";
+import { MonitorSmartphone, Scan, ScanEye, UserCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,8 +17,8 @@ import { Separator } from "@/components/ui/separator";
 import { useXrSupport } from "@/hooks/useXrSupport";
 import { cn } from "@/lib/utils";
 import {
-  useExperienceModeStore,
   type ExperienceMode,
+  useExperienceModeStore,
 } from "@/stores/experience-mode";
 
 interface ModeOption {

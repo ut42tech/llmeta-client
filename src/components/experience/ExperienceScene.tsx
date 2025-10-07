@@ -1,13 +1,13 @@
 "use client";
 
+import { useXRControllerInput } from "@react-three/viverse";
+import { type RefObject, useRef } from "react";
+import type { Vector3 } from "three";
 import { Level } from "@/components/Level";
 import { LocalPlayer } from "@/components/player/LocalPlayer";
-import { PlayerHandle } from "@/components/player/Player";
+import type { PlayerHandle } from "@/components/player/Player";
 import { Players } from "@/components/player/Players";
 import { useColyseusRoom } from "@/utils/colyseus";
-import { useXRControllerInput } from "@react-three/viverse";
-import { useRef, RefObject } from "react";
-import { Vector3 } from "three";
 
 type Props = {
   mode: "desktop" | "xr";

@@ -1,5 +1,5 @@
-import { mixamoVRMRigMap } from "@/utils/mixamoVRMRigMap";
 import * as THREE from "three";
+import { mixamoVRMRigMap } from "@/utils/mixamoVRMRigMap";
 
 type HasAnimations = { animations?: THREE.AnimationClip[] };
 type HasSceneLookup = { getObjectByName: (name: string) => any };

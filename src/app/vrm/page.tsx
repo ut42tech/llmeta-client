@@ -1,7 +1,7 @@
 "use client";
 
-import { VRMCanvas } from "@/components/vrm/VRMCanvas";
 import { Loader } from "@react-three/drei";
+import { VRMCanvas } from "@/components/vrm/VRMCanvas";
 
 function VRMPage() {
   return (

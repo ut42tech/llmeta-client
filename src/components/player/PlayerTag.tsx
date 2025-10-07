@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { Root, Text } from "@react-three/uikit";
 import { useRef } from "react";
-import { Group } from "three";
+import type { Group } from "three";
 
 type PlayerTagProps = {
   name: string;

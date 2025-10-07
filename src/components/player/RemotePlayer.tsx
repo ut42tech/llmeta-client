@@ -1,8 +1,8 @@
 "use client";
 
-import { PlayerTag } from "@/components/player/PlayerTag";
-import type { Group } from "three";
 import type { Ref } from "react";
+import type { Group } from "three";
+import { PlayerTag } from "@/components/player/PlayerTag";
 
 type RemotePlayerProps = {
   name: string;

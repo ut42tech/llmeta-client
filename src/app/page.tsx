@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { Loader } from "@react-three/drei";
+import { PersonStanding, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { MainCanvas } from "@/components/main/MainCanvas";
 import { Button } from "@/components/ui/button";
-import { PersonStanding, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (

@@ -1,4 +1,4 @@
-import { Schema, type, MapSchema } from "@colyseus/schema";
+import { MapSchema, Schema, type } from "@colyseus/schema";
 import { colyseus } from "use-colyseus";
 
 // Same as Server/src/rooms/MyRoom.ts
