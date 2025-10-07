@@ -65,7 +65,7 @@ export const Players = () => {
 
   return (
     <group>
-      {remotePlayers.map((player) => (
+      {remotes.map((player) => (
         <RemotePlayerEntity
           key={player.id}
           name={player.name}
