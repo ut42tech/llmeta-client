@@ -1,49 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useCurrentUserImage } from "@/hooks/useCurrentUserImage";
 import { useCurrentUserName } from "@/hooks/useCurrentUserName";
-import { createClient } from "@/lib/supabase/client";
-import type { RealtimeUser } from "@/types/user";
-
-const supabase = createClient();
+import { useRealtimePresenceStore } from "@/stores/realtime-presence";
 
 export const useRealtimePresenceRoom = (roomName: string) => {
   const currentUserImage = useCurrentUserImage();
   const currentUserName = useCurrentUserName();
-
-  const [users, setUsers] = useState<Record<string, RealtimeUser>>({});
+  const { users, subscribeToRoom, unsubscribeFromRoom } =
+    useRealtimePresenceStore();
 
   useEffect(() => {
-    const room = supabase.channel(roomName);
-
-    room
-      .on("presence", { event: "sync" }, () => {
-        const newState = room.presenceState<{ image: string; name: string }>();
-
-        const newUsers = Object.fromEntries(
-          Object.entries(newState).map(([key, values]) => [
-            key,
-            { name: values[0].name, image: values[0].image },
-          ]),
-        ) as Record<string, RealtimeUser>;
-        setUsers(newUsers);
-      })
-      .subscribe(async (status) => {
-        if (status !== "SUBSCRIBED") {
-          return;
-        }
-
-        await room.track({
-          name: currentUserName,
-          image: currentUserImage,
-        });
-      });
+    subscribeToRoom(roomName, currentUserName, currentUserImage);
 
     return () => {
-      room.unsubscribe();
+      unsubscribeFromRoom();
     };
-  }, [roomName, currentUserName, currentUserImage]);
+  }, [
+    roomName,
+    currentUserName,
+    currentUserImage,
+    subscribeToRoom,
+    unsubscribeFromRoom,
+  ]);
 
   return { users };
 };
