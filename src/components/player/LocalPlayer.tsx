@@ -10,7 +10,11 @@ import {
 import { useXRInputSourceState, XRSpace } from "@react-three/xr";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Euler, type Object3D, Quaternion, Vector3 } from "three";
-import { Player } from "@/components/player/Player";
+import {
+  Player,
+  type PlayerHandle,
+  type PlayerTransformSnapshot,
+} from "@/components/player/Player";
 import { PlayerTag } from "@/components/player/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
 import {
@@ -23,9 +27,9 @@ import {
 type LocalPlayerProps = {
   name: string;
   isXR: boolean;
-  input?: any;
-  PlayerRef?: any;
-  onPoseUpdate?: (pose: any) => void;
+  input?: unknown;
+  PlayerRef?: React.RefObject<PlayerHandle | null>;
+  onPoseUpdate?: (pose: PlayerTransformSnapshot) => void;
   poseUpdateIntervalMs?: number;
 };
 
@@ -257,12 +261,22 @@ const XRControllersProbe = ({
 
   // 手がある場合は wrist 関節の XRJointSpace を優先し、
   // 無ければ gripSpace、さらに無ければ targetRaySpace を使用
+  const getHandJoint = (inputSource: XRInputSource | undefined) => {
+    if (!inputSource) return null;
+    // XRHand オブジェクトが存在する場合は hand.get("wrist") を使用
+    const hand = inputSource.hand;
+    if (hand && typeof hand.get === "function") {
+      return hand.get("wrist") || null;
+    }
+    return null;
+  };
+
   const leftSpace =
-    (leftState?.inputSource as any)?.hand?.get?.("wrist") ??
+    getHandJoint(leftState?.inputSource) ??
     leftState?.inputSource?.gripSpace ??
     leftState?.inputSource?.targetRaySpace;
   const rightSpace =
-    (rightState?.inputSource as any)?.hand?.get?.("wrist") ??
+    getHandJoint(rightState?.inputSource) ??
     rightState?.inputSource?.gripSpace ??
     rightState?.inputSource?.targetRaySpace;
 

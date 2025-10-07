@@ -5,6 +5,20 @@ import { RemotePlayer } from "@/components/player/RemotePlayer";
 import { useRemotePlayerInterpolation } from "@/hooks/useRemotePlayerInterpolation";
 import { useColyseusRoom, useColyseusState } from "@/utils/colyseus";
 
+/**
+ * Colyseus サーバーから送信されるプレイヤー状態の型定義
+ */
+interface ColyseusPlayerState {
+  isXR?: boolean;
+  isHandTracking?: boolean;
+  position?: { x: number; y: number; z: number };
+  rotation?: { x: number; y: number; z: number };
+  leftHandPosition?: { x: number; y: number; z: number };
+  leftHandRotation?: { x: number; y: number; z: number };
+  rightHandPosition?: { x: number; y: number; z: number };
+  rightHandRotation?: { x: number; y: number; z: number };
+}
+
 export const Players = () => {
   const room = useColyseusRoom();
   const state = useColyseusState();
@@ -28,7 +42,7 @@ export const Players = () => {
     if (!state) return list;
 
     // MapSchema の反復取得
-    state.players.forEach((p: any, id: string) => {
+    state.players.forEach((p: ColyseusPlayerState, id: string) => {
       if (id === localId) return;
       // サーバーのpositionは「頭（カメラ）」のワールド位置
       const pos: [number, number, number] = [
@@ -41,16 +55,16 @@ export const Players = () => {
         p.rotation?.y ?? 0,
         p.rotation?.z ?? 0,
       ];
-      const lhp = p.leftHandPosition
+      const lhp: [number, number, number] | undefined = p.leftHandPosition
         ? [p.leftHandPosition.x, p.leftHandPosition.y, p.leftHandPosition.z]
         : undefined;
-      const lhr = p.leftHandRotation
+      const lhr: [number, number, number] | undefined = p.leftHandRotation
         ? [p.leftHandRotation.x, p.leftHandRotation.y, p.leftHandRotation.z]
         : undefined;
-      const rhp = p.rightHandPosition
+      const rhp: [number, number, number] | undefined = p.rightHandPosition
         ? [p.rightHandPosition.x, p.rightHandPosition.y, p.rightHandPosition.z]
         : undefined;
-      const rhr = p.rightHandRotation
+      const rhr: [number, number, number] | undefined = p.rightHandRotation
         ? [p.rightHandRotation.x, p.rightHandRotation.y, p.rightHandRotation.z]
         : undefined;
 
@@ -61,10 +75,10 @@ export const Players = () => {
         isHandTracking: !!p.isHandTracking,
         position: pos,
         rotation: rot,
-        leftHandPosition: lhp as any,
-        leftHandRotation: lhr as any,
-        rightHandPosition: rhp as any,
-        rightHandRotation: rhr as any,
+        leftHandPosition: lhp,
+        leftHandRotation: lhr,
+        rightHandPosition: rhp,
+        rightHandRotation: rhr,
       });
     });
 

@@ -28,21 +28,19 @@ export type PlayerHandle = {
 };
 
 export type PlayerProps = PropsWithChildren<{
-  /** SimpleCharacter の model プロップを透過（例: { type: 'vrm', url: '...' } | false） */
-  model?: any;
-  /** XR などの入力を透過 */
-  input?: any;
-  /** カメラ挙動（true/false での既定制御 or 具体的なカメラビヘイビアを指定） */
-  cameraBehavior?: any;
+  /** SimpleCharacter の model プロップ（VRM/GLTF設定 or false） */
+  model?: unknown;
+  /** XR などの入力（Input インスタンスまたは配列） */
+  input?: unknown;
+  /** カメラ挙動（boolean または CameraBehavior オブジェクト） */
+  cameraBehavior?: unknown;
   /** しきい値より落下したら原点へリスポーン（既定: -10） */
   fallThresholdY?: number;
   /** フレーム毎または一定間隔で現在の姿勢をコールバック（サーバー送信用） */
   onPoseUpdate?: (pose: PlayerTransformSnapshot) => void;
   /** onPoseUpdate の送信間隔（ms）。未指定なら毎フレーム呼び出し。 */
   poseUpdateIntervalMs?: number;
-}> &
-  // SimpleCharacter にそのまま渡したい追加 props を許容
-  Record<string, any>;
+}>;
 
 export const Player = forwardRef<PlayerHandle, PlayerProps>(
   (
@@ -54,7 +52,6 @@ export const Player = forwardRef<PlayerHandle, PlayerProps>(
       fallThresholdY = -10,
       onPoseUpdate,
       poseUpdateIntervalMs,
-      ...rest
     },
     ref,
   ) => {
@@ -114,11 +111,13 @@ export const Player = forwardRef<PlayerHandle, PlayerProps>(
 
     return (
       <SimpleCharacter
-        ref={characterRef as any}
+        ref={characterRef}
+        // @ts-expect-error SimpleCharacter の型定義が不完全なため、unknown を許容
         model={model}
+        // @ts-expect-error SimpleCharacter の型定義が不完全なため、unknown を許容
         input={input}
+        // @ts-expect-error SimpleCharacter の型定義が不完全なため、unknown を許容
         cameraBehavior={cameraBehavior}
-        {...rest}
       >
         {children}
       </SimpleCharacter>

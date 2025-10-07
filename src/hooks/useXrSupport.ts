@@ -13,10 +13,10 @@ export function useXrSupport() {
 
     const check = async () => {
       try {
-        const nav: any =
-          typeof navigator !== "undefined" ? (navigator as any) : undefined;
-        const supported = nav?.xr?.isSessionSupported
-          ? await nav.xr.isSessionSupported("immersive-vr")
+        const nav = typeof navigator !== "undefined" ? navigator : undefined;
+        const xr = nav?.xr;
+        const supported = xr?.isSessionSupported
+          ? await xr.isSessionSupported("immersive-vr")
           : false;
         if (!disposed) setXrSupported(!!supported);
       } catch {
