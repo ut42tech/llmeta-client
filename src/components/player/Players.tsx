@@ -1,105 +1,36 @@
 "use client";
 
-import { useMemo } from "react";
 import { RemotePlayer } from "@/components/player/RemotePlayer";
 import { useRemotePlayerInterpolation } from "@/hooks/useRemotePlayerInterpolation";
-import { useColyseusRoom, useColyseusState } from "@/utils/colyseus";
-
-/**
- * Colyseus サーバーから送信されるプレイヤー状態の型定義
- */
-interface ColyseusPlayerState {
-  isXR?: boolean;
-  isHandTracking?: boolean;
-  position?: { x: number; y: number; z: number };
-  rotation?: { x: number; y: number; z: number };
-  leftHandPosition?: { x: number; y: number; z: number };
-  leftHandRotation?: { x: number; y: number; z: number };
-  rightHandPosition?: { x: number; y: number; z: number };
-  rightHandRotation?: { x: number; y: number; z: number };
-}
+import { useSyncPlayers } from "@/hooks/useSyncPlayers";
+import type { RemotePose } from "@/stores/players-store";
+import { usePlayersStore } from "@/stores/players-store";
+import { useColyseusRoom } from "@/utils/colyseus";
 
 export const Players = () => {
+  useSyncPlayers();
   const room = useColyseusRoom();
-  const state = useColyseusState();
+  const players = usePlayersStore((state) => state.players);
 
   const localId = room?.sessionId;
 
-  const remotes = useMemo(() => {
-    const list: Array<{
-      id: string;
-      name: string;
-      isXR: boolean;
-      isHandTracking: boolean;
-      position: [number, number, number]; // head(world)
-      rotation: [number, number, number]; // head euler(YXZ)
-      leftHandPosition?: [number, number, number];
-      leftHandRotation?: [number, number, number];
-      rightHandPosition?: [number, number, number];
-      rightHandRotation?: [number, number, number];
-    }> = [];
-
-    if (!state) return list;
-
-    // MapSchema の反復取得
-    state.players.forEach((p: ColyseusPlayerState, id: string) => {
-      if (id === localId) return;
-      // サーバーのpositionは「頭（カメラ）」のワールド位置
-      const pos: [number, number, number] = [
-        p.position?.x ?? 0,
-        p.position?.y ?? 0,
-        p.position?.z ?? 0,
-      ];
-      const rot: [number, number, number] = [
-        p.rotation?.x ?? 0,
-        p.rotation?.y ?? 0,
-        p.rotation?.z ?? 0,
-      ];
-      const lhp: [number, number, number] | undefined = p.leftHandPosition
-        ? [p.leftHandPosition.x, p.leftHandPosition.y, p.leftHandPosition.z]
-        : undefined;
-      const lhr: [number, number, number] | undefined = p.leftHandRotation
-        ? [p.leftHandRotation.x, p.leftHandRotation.y, p.leftHandRotation.z]
-        : undefined;
-      const rhp: [number, number, number] | undefined = p.rightHandPosition
-        ? [p.rightHandPosition.x, p.rightHandPosition.y, p.rightHandPosition.z]
-        : undefined;
-      const rhr: [number, number, number] | undefined = p.rightHandRotation
-        ? [p.rightHandRotation.x, p.rightHandRotation.y, p.rightHandRotation.z]
-        : undefined;
-
-      list.push({
-        id,
-        name: id.slice(0, 8),
-        isXR: !!p.isXR,
-        isHandTracking: !!p.isHandTracking,
-        position: pos,
-        rotation: rot,
-        leftHandPosition: lhp,
-        leftHandRotation: lhr,
-        rightHandPosition: rhp,
-        rightHandRotation: rhr,
-      });
-    });
-
-    return list;
-  }, [state, localId]);
-
-  if (!state) return null;
+  const remotePlayers = Array.from(players.entries())
+    .filter(([id]) => id !== localId)
+    .map(([id, player]) => ({
+      id,
+      name: id.slice(0, 8),
+      isXR: player.isXR,
+      pose: player.pose,
+    }));
 
   return (
     <group>
-      {remotes.map((rp) => (
+      {remotePlayers.map((player) => (
         <RemotePlayerEntity
-          key={rp.id}
-          name={rp.name}
-          isXR={rp.isXR}
-          position={rp.position}
-          rotation={rp.rotation}
-          leftHandPosition={rp.leftHandPosition}
-          leftHandRotation={rp.leftHandRotation}
-          rightHandPosition={rp.rightHandPosition}
-          rightHandRotation={rp.rightHandRotation}
+          key={player.id}
+          name={player.name}
+          isXR={player.isXR}
+          pose={player.pose}
         />
       ))}
     </group>
@@ -110,34 +41,17 @@ export const Players = () => {
 const RemotePlayerEntity = ({
   name,
   isXR,
-  position,
-  rotation,
-  leftHandPosition,
-  leftHandRotation,
-  rightHandPosition,
-  rightHandRotation,
+  pose,
   /** 減衰係数（大きいほど素早く追従） */
   damping = 12,
 }: {
   name: string;
   isXR: boolean;
-  position: [number, number, number];
-  rotation: [number, number, number];
-  leftHandPosition?: [number, number, number];
-  leftHandRotation?: [number, number, number];
-  rightHandPosition?: [number, number, number];
-  rightHandRotation?: [number, number, number];
+  pose: RemotePose;
   damping?: number;
 }) => {
   const { groupRef, leftRef, rightRef } = useRemotePlayerInterpolation(
-    {
-      position,
-      rotation,
-      leftHandPosition,
-      leftHandRotation,
-      rightHandPosition,
-      rightHandRotation,
-    },
+    pose,
     damping,
   );
 
@@ -145,8 +59,8 @@ const RemotePlayerEntity = ({
     <group ref={groupRef}>
       <RemotePlayer
         name={name}
-        showLeftHand={isXR && !!leftHandPosition}
-        showRightHand={isXR && !!rightHandPosition}
+        showLeftHand={isXR && !!pose.leftHandPosition}
+        showRightHand={isXR && !!pose.rightHandPosition}
         leftHandRef={leftRef}
         rightHandRef={rightRef}
       />
