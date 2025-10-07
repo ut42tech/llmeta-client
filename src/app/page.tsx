@@ -30,7 +30,7 @@ export default function Home() {
           </div>
           <nav className="hidden gap-2 md:flex">
             <Button asChild variant="ghost" size="sm">
-              <Link href="/experience">
+              <Link href="/lobby">
                 <Sparkles />
                 体験する
               </Link>
@@ -56,7 +56,7 @@ export default function Home() {
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row md:mt-10">
               <Button asChild size="lg" className="min-w-40">
-                <Link href="/experience" aria-label="体験ページへ移動">
+                <Link href="/lobby" aria-label="ロビーページへ移動">
                   <Sparkles />
                   体験する
                 </Link>

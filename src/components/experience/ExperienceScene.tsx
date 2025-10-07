@@ -18,26 +18,12 @@ export const ExperienceScene = ({ mode }: Props) => {
   const name = room?.sessionId ?? "接続中...";
   const isXR = mode === "xr";
   const PlayerRef = useRef<PlayerHandle>(null);
-  if (isXR) {
-    const input = useXRControllerInput();
-    return (
-      <SceneContent
-        name={name}
-        isXR={isXR}
-        input={input}
-        PlayerRef={PlayerRef}
-      />
-    );
-  } else {
-    return (
-      <SceneContent
-        name={name}
-        isXR={isXR}
-        input={undefined}
-        PlayerRef={PlayerRef}
-      />
-    );
-  }
+  const controllerInput = useXRControllerInput();
+  const input = isXR ? controllerInput : undefined;
+
+  return (
+    <SceneContent name={name} isXR={isXR} input={input} PlayerRef={PlayerRef} />
+  );
 };
 
 type SceneContentProps = {
