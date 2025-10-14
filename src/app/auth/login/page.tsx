@@ -21,6 +21,8 @@ export default function LoginPage() {
   const handleGitHubLogin = async () => {
     setIsLoading(true);
     try {
+      // Sign in with GitHub OAuth
+      // If user has an anonymous session, Supabase will automatically link it
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
