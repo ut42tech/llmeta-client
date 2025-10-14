@@ -1,12 +1,59 @@
 "use client";
 
 import { Loader } from "@react-three/drei";
-import { PersonStanding, Sparkles } from "lucide-react";
+import { LogIn, LogOut, PersonStanding, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { MainCanvas } from "@/components/main/MainCanvas";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Home() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    const initAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      // If no session exists, create an anonymous session
+      if (!session) {
+        await supabase.auth.signInAnonymously();
+      }
+
+      // Check if user is authenticated (not anonymous)
+      const { data: currentSession } = await supabase.auth.getSession();
+      setIsAuthenticated(
+        !!currentSession.session && !currentSession.session.user.is_anonymous,
+      );
+      setIsLoading(false);
+    };
+
+    initAuth();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session && !session.user.is_anonymous);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    // Sign in anonymously after logout to maintain a session
+    await supabase.auth.signInAnonymously();
+    router.refresh();
+  };
+
   return (
     <div className="relative h-screen w-screen overflow-hidden">
       {/* Background 3D Canvas */}
@@ -41,6 +88,20 @@ export default function Home() {
                 アバター
               </Link>
             </Button>
+            {!isLoading &&
+              (isAuthenticated ? (
+                <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  <LogOut />
+                  ログアウト
+                </Button>
+              ) : (
+                <Button asChild variant="ghost" size="sm">
+                  <Link href="/auth/login">
+                    <LogIn />
+                    ログイン
+                  </Link>
+                </Button>
+              ))}
           </nav>
         </header>
 
