@@ -16,20 +16,30 @@ export default function Home() {
   const supabase = createClient();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const initAuth = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
+
+      // If no session exists, create an anonymous session
+      if (!session) {
+        await supabase.auth.signInAnonymously();
+      }
+
+      // Check if user is authenticated (not anonymous)
+      const { data: currentSession } = await supabase.auth.getSession();
+      setIsAuthenticated(
+        !!currentSession.session && !currentSession.session.user.is_anonymous,
+      );
       setIsLoading(false);
     };
 
-    checkAuth();
+    initAuth();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
+      setIsAuthenticated(!!session && !session.user.is_anonymous);
     });
 
     return () => {
@@ -39,6 +49,8 @@ export default function Home() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    // Sign in anonymously after logout to maintain a session
+    await supabase.auth.signInAnonymously();
     router.refresh();
   };
 
