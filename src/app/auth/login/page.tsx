@@ -43,13 +43,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800 px-4">
-      <Card className="w-full max-w-md border-slate-700 bg-slate-900/50">
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center text-white">
-            Project LLMeta
-          </CardTitle>
-          <CardDescription className="text-center text-slate-400">
+          <CardTitle className="text-2xl text-center">Project LLMeta</CardTitle>
+          <CardDescription className="text-center">
             GitHubアカウントでログイン
           </CardDescription>
         </CardHeader>
@@ -63,13 +61,8 @@ export default function LoginPage() {
             <Github className="mr-2 h-5 w-5" />
             {isLoading ? "ログイン中..." : "GitHubでログイン"}
           </Button>
-
           <div className="text-center">
-            <Button
-              variant="link"
-              onClick={() => router.push("/")}
-              className="text-slate-400 hover:text-white"
-            >
+            <Button variant="link" onClick={() => router.push("/")}>
               ホームに戻る
             </Button>
           </div>
