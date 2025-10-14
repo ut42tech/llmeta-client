@@ -1,37 +1,47 @@
 "use client";
 
 import { Loader } from "@react-three/drei";
+import type { User } from "@supabase/supabase-js";
 import { LogIn, LogOut, PersonStanding, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MainCanvas } from "@/components/main/MainCanvas";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
     const initAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      // If no session exists, create an anonymous session
-      if (!session) {
-        await supabase.auth.signInAnonymously();
+        if (session?.user) {
+          setUser(session.user);
+          setIsAuthenticated(!session.user.is_anonymous);
+        } else {
+          const { data, error } = await supabase.auth.signInAnonymously();
+          if (error) {
+            console.error("Anonymous session error:", error);
+          } else if (data.session?.user) {
+            setUser(data.session.user);
+            setIsAuthenticated(false);
+          }
+        }
+      } catch (error) {
+        console.error("Auth init error:", error);
+      } finally {
+        setIsLoading(false);
       }
-
-      // Check if user is authenticated (not anonymous)
-      const { data: currentSession } = await supabase.auth.getSession();
-      setIsAuthenticated(
-        !!currentSession.session && !currentSession.session.user.is_anonymous,
-      );
-      setIsLoading(false);
     };
 
     initAuth();
@@ -39,7 +49,9 @@ export default function Home() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session && !session.user.is_anonymous);
+      const sessionUser = session?.user ?? null;
+      setUser(sessionUser);
+      setIsAuthenticated(Boolean(sessionUser && !sessionUser.is_anonymous));
     });
 
     return () => {
@@ -54,14 +66,44 @@ export default function Home() {
     router.refresh();
   };
 
+  const avatarUrl = useMemo(() => {
+    if (!user) {
+      return "";
+    }
+
+    const metadata = user.user_metadata as Record<string, unknown> | null;
+    if (!metadata) {
+      return "";
+    }
+
+    return (
+      (typeof metadata.avatar_url === "string" && metadata.avatar_url) ||
+      (typeof metadata.picture === "string" && metadata.picture) ||
+      ""
+    );
+  }, [user]);
+
+  const avatarInitial = useMemo(() => {
+    if (!user) {
+      return "";
+    }
+
+    const metadata = user.user_metadata as Record<string, unknown> | null;
+    const nameValue =
+      metadata?.full_name ?? metadata?.name ?? metadata?.user_name;
+    const displaySource =
+      (typeof nameValue === "string" && nameValue) || user.email || "";
+
+    const trimmed = displaySource.trim();
+    return trimmed ? trimmed.charAt(0).toUpperCase() : "";
+  }, [user]);
+
   return (
     <div className="relative h-screen w-screen overflow-hidden">
       {/* Background 3D Canvas */}
       <MainCanvas />
-
       {/* Black translucent overlay */}
       <div className="pointer-events-none absolute inset-0 bg-black/50" />
-
       {/* Foreground content */}
       <div className="absolute inset-0 z-10 flex flex-col">
         {/* Header / Simple nav */}
@@ -90,10 +132,22 @@ export default function Home() {
             </Button>
             {!isLoading &&
               (isAuthenticated ? (
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  <LogOut />
-                  ログアウト
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    aria-label="ログアウト"
+                  >
+                    <LogOut />
+                    ログアウト
+                  </Button>
+
+                  <Avatar className="size-8">
+                    <AvatarImage src={avatarUrl} alt="アバター" />
+                    <AvatarFallback>{avatarInitial || "U"}</AvatarFallback>
+                  </Avatar>
+                </div>
               ) : (
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/auth/login">
@@ -146,8 +200,6 @@ export default function Home() {
           © 2025 Takuya Uehara
         </footer>
       </div>
-
-      {/* Drei Loader overlays with its own portal/z-index */}
       <Loader />
     </div>
   );
