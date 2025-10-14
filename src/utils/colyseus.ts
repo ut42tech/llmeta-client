@@ -10,6 +10,7 @@ export enum MessageType {
 export type ProfileData = {
   isXR?: boolean;
   isHandTracking?: boolean;
+  isVisible?: boolean;
 };
 
 export type MoveData = {
@@ -30,6 +31,7 @@ export class Vec3 extends Schema {
 export class Player extends Schema {
   @type("boolean") isXR: boolean = false;
   @type("boolean") isHandTracking: boolean = false;
+  @type("boolean") isVisible: boolean = false;
   @type(Vec3) position: Vec3 = new Vec3();
   @type(Vec3) rotation: Vec3 = new Vec3();
   @type(Vec3) leftHandPosition: Vec3 = new Vec3();

@@ -22,6 +22,7 @@ export interface Vector3Object {
 export interface ColyseusPlayerState {
   isXR?: boolean;
   isHandTracking?: boolean;
+  isVisible?: boolean;
   position?: Vector3Object;
   rotation?: Vector3Object;
   leftHandPosition?: Vector3Object;
