@@ -1,102 +1,15 @@
 "use client";
 
 import { Loader } from "@react-three/drei";
-import type { User } from "@supabase/supabase-js";
 import { LogIn, LogOut, PersonStanding, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
 import { MainCanvas } from "@/components/main/MainCanvas";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
-  const supabase = createClient();
-
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (session?.user) {
-          setUser(session.user);
-          setIsAuthenticated(!session.user.is_anonymous);
-        } else {
-          const { data, error } = await supabase.auth.signInAnonymously();
-          if (error) {
-            console.error("Anonymous session error:", error);
-          } else if (data.session?.user) {
-            setUser(data.session.user);
-            setIsAuthenticated(false);
-          }
-        }
-      } catch (error) {
-        console.error("Auth init error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      const sessionUser = session?.user ?? null;
-      setUser(sessionUser);
-      setIsAuthenticated(Boolean(sessionUser && !sessionUser.is_anonymous));
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [supabase]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    // Sign in anonymously after logout to maintain a session
-    await supabase.auth.signInAnonymously();
-    router.refresh();
-  };
-
-  const avatarUrl = useMemo(() => {
-    if (!user) {
-      return "";
-    }
-
-    const metadata = user.user_metadata as Record<string, unknown> | null;
-    if (!metadata) {
-      return "";
-    }
-
-    return (
-      (typeof metadata.avatar_url === "string" && metadata.avatar_url) ||
-      (typeof metadata.picture === "string" && metadata.picture) ||
-      ""
-    );
-  }, [user]);
-
-  const avatarInitial = useMemo(() => {
-    if (!user) {
-      return "";
-    }
-
-    const metadata = user.user_metadata as Record<string, unknown> | null;
-    const nameValue =
-      metadata?.full_name ?? metadata?.name ?? metadata?.user_name;
-    const displaySource =
-      (typeof nameValue === "string" && nameValue) || user.email || "";
-
-    const trimmed = displaySource.trim();
-    return trimmed ? trimmed.charAt(0).toUpperCase() : "";
-  }, [user]);
+  const { isAuthenticated, isLoading, profile, logout } = useAuth();
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
@@ -136,16 +49,15 @@ export default function Home() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={handleLogout}
+                    onClick={logout}
                     aria-label="ログアウト"
                   >
                     <LogOut />
                     ログアウト
                   </Button>
-
                   <Avatar className="size-8">
-                    <AvatarImage src={avatarUrl} alt="アバター" />
-                    <AvatarFallback>{avatarInitial || "U"}</AvatarFallback>
+                    <AvatarImage src={profile.avatarUrl} alt="アバター" />
+                    <AvatarFallback>{profile.initial}</AvatarFallback>
                   </Avatar>
                 </div>
               ) : (
