@@ -43,8 +43,8 @@ export default function ExperiencePage() {
     setMode(queryMode as ExperienceMode);
   }, [router, xrSupported, setMode]);
 
-  // Colyseus connection lifecycle
-  useColyseusLifecycle("my_room");
+  // Colyseus接続
+  useColyseusLifecycle();
 
   // URLクエリからモードを取得（クライアントサイドのみ）
   const urlMode = isClient

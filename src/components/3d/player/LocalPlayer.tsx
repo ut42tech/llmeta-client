@@ -17,12 +17,13 @@ import {
 } from "@/components/3d/player/Player";
 import { PlayerTag } from "@/components/3d/player/PlayerTag";
 import { SnapRotateXROrigin } from "@/components/3d/player/SnapRotateXROrigin";
+import { useColyseusRoom } from "@/utils/colyseus";
 import {
-  MessageType,
-  type MoveData,
-  type ProfileData,
-  useColyseusRoom,
-} from "@/utils/colyseus";
+  addHandData,
+  createDesktopMoveData,
+  sendMoveUpdate,
+  sendProfileUpdate,
+} from "@/utils/colyseus-helpers";
 
 type LocalPlayerProps = {
   name: string;
@@ -42,21 +43,15 @@ export const LocalPlayer = ({
   poseUpdateIntervalMs,
 }: LocalPlayerProps) => {
   const room = useColyseusRoom();
-  // 基本プロフィール同期（デスクトップ時は isHandTracking を false で明示）
-  useEffect(() => {
-    if (!room) return;
-    const payload: ProfileData = isXR
-      ? { isXR }
-      : { isXR, isHandTracking: false };
-    try {
-      room.send(MessageType.CHANGE_PROFILE, payload);
-    } catch (e) {
-      console.warn("Failed to send profile (isXR) to Colyseus:", e);
-    }
-  }, [room, isXR]);
   const { camera } = useThree();
-  // XR時のみ更新される左右手ポーズの共有Ref
-  // デフォルト位置: プレイヤーの腰あたり（y=1.0）、左右に配置
+
+  // 初期プロフィール同期
+  useEffect(() => {
+    const profile = isXR ? { isXR } : { isXR, isHandTracking: false };
+    sendProfileUpdate(room, profile);
+  }, [room, isXR]);
+
+  // XR手の姿勢を保持するRef
   const leftHandRef = useRef<{ pos: Vector3; euler: Euler; has: boolean }>({
     pos: new Vector3(-0.3, 1.0, 0),
     euler: new Euler(),
@@ -68,77 +63,35 @@ export const LocalPlayer = ({
     has: false,
   });
 
-  const getCameraEulerYXZ = useCallback(() => {
-    const q = new Quaternion();
-    camera.getWorldQuaternion(q);
-    const e = new Euler().setFromQuaternion(q, "YXZ");
-    return e;
+  const getCameraWorldTransform = useCallback(() => {
+    const position = camera.getWorldPosition(new Vector3());
+    const quaternion = camera.getWorldQuaternion(new Quaternion());
+    const rotation = new Euler().setFromQuaternion(quaternion, "YXZ");
+    return { position, quaternion, rotation };
   }, [camera]);
 
-  const mergedOnPoseUpdate = useCallback(
-    (pose: {
-      position: { x: number; y: number; z: number };
-      rotation: { x: number; y: number; z: number };
-      quaternion: { x: number; y: number; z: number; w: number };
-    }) => {
+  const handlePoseUpdate = useCallback(
+    (pose: PlayerTransformSnapshot) => {
       onPoseUpdate?.(pose);
 
-      if (room) {
-        try {
-          // 頭（カメラ）のワールド姿勢
-          const e = getCameraEulerYXZ();
-          const camPos = camera.getWorldPosition(new Vector3());
-          const camQuat = camera.getWorldQuaternion(new Quaternion());
+      const { position, quaternion, rotation } = getCameraWorldTransform();
 
-          const payload: MoveData = {
-            // プレイヤーのpositionは頭（カメラ）のワールド位置を送る
-            position: { x: camPos.x, y: camPos.y, z: camPos.z },
-            rotation: { x: e.x, y: e.y, z: 0 },
-          };
+      let moveData = createDesktopMoveData(position, rotation);
 
-          if (isXR) {
-            if (leftHandRef.current.has) {
-              const lp = leftHandRef.current.pos;
-              const le = leftHandRef.current.euler;
-              payload.leftHandPosition = { x: lp.x, y: lp.y, z: lp.z };
-              payload.leftHandRotation = { x: le.x, y: le.y, z: le.z };
-            } else {
-              const offset = new Vector3(-0.3, -0.5, -0.3);
-              offset.applyQuaternion(camQuat);
-              const defaultPos = camPos.clone().add(offset);
-              payload.leftHandPosition = {
-                x: defaultPos.x,
-                y: defaultPos.y,
-                z: defaultPos.z,
-              };
-              payload.leftHandRotation = { x: e.x, y: e.y, z: 0 };
-            }
-
-            if (rightHandRef.current.has) {
-              const rp = rightHandRef.current.pos;
-              const re = rightHandRef.current.euler;
-              payload.rightHandPosition = { x: rp.x, y: rp.y, z: rp.z };
-              payload.rightHandRotation = { x: re.x, y: re.y, z: re.z };
-            } else {
-              const offset = new Vector3(0.3, -0.5, -0.3);
-              offset.applyQuaternion(camQuat);
-              const defaultPos = camPos.clone().add(offset);
-              payload.rightHandPosition = {
-                x: defaultPos.x,
-                y: defaultPos.y,
-                z: defaultPos.z,
-              };
-              payload.rightHandRotation = { x: e.x, y: e.y, z: 0 };
-            }
-          }
-
-          room.send(MessageType.MOVE, payload);
-        } catch (e) {
-          console.warn("Failed to send pose to Colyseus:", e);
-        }
+      if (isXR) {
+        moveData = addHandData(
+          moveData,
+          leftHandRef.current,
+          rightHandRef.current,
+          position,
+          quaternion,
+          rotation,
+        );
       }
+
+      sendMoveUpdate(room, moveData);
     },
-    [room, onPoseUpdate, getCameraEulerYXZ, camera, isXR],
+    [room, onPoseUpdate, getCameraWorldTransform, isXR],
   );
 
   const interval = useMemo(
@@ -162,62 +115,57 @@ export const LocalPlayer = ({
         input={isXR ? [input] : [LocomotionKeyboardInput, PointerLockInput]}
         cameraBehavior={isXR ? false : FirstPersonCharacterCameraBehavior}
         model={false}
-        onPoseUpdate={mergedOnPoseUpdate}
+        onPoseUpdate={handlePoseUpdate}
         poseUpdateIntervalMs={interval}
       >
         <PlayerTag name={name} />
-        {/* XR内のみ hand-tracking 状態を検出して同期 */}
-        {isXR ? <XRProfileSync isXR={isXR} /> : null}
-        {isXR ? (
-          <XRControllersProbe leftRef={leftHandRef} rightRef={rightHandRef} />
-        ) : null}
-        {/* XR時のみ手のモデルを表示 */}
-        {isXR ? <SnapRotateXROrigin /> : null}
+        {isXR && (
+          <>
+            <XRProfileSync isXR={isXR} />
+            <XRControllersProbe leftRef={leftHandRef} rightRef={rightHandRef} />
+            <SnapRotateXROrigin />
+          </>
+        )}
       </Player>
     </>
   );
 };
 
-// XR のみでマウントして hand-tracking の有無をサーバーへ同期
+/**
+ * XRハンドトラッキング状態をサーバーに同期
+ */
 const XRProfileSync = ({ isXR }: { isXR: boolean }) => {
   const room = useColyseusRoom();
   const leftHandState = useXRInputSourceState("hand", "left");
   const rightHandState = useXRInputSourceState("hand", "right");
+
   const isHandTracking = !!(
     leftHandState?.inputSource || rightHandState?.inputSource
   );
 
   useEffect(() => {
-    if (!room) return;
-    try {
-      const payload: ProfileData = { isXR, isHandTracking };
-      room.send(MessageType.CHANGE_PROFILE, payload);
-    } catch (e) {
-      console.warn("Failed to send hand-tracking profile to Colyseus:", e);
-    }
+    sendProfileUpdate(room, { isXR, isHandTracking });
   }, [room, isXR, isHandTracking]);
 
   return null;
 };
 
-// XRコンテキスト内でのみマウントし、左右手（コントローラーgrip）のワールド姿勢をRefに書き込む
+/**
+ * XRコントローラー・ハンドの姿勢をRefに書き込む
+ */
 const XRControllersProbe = ({
   leftRef,
   rightRef,
 }: {
   leftRef: React.RefObject<{ pos: Vector3; euler: Euler; has: boolean }>;
-  rightRef: React.RefObject<{
-    pos: Vector3;
-    euler: Euler;
-    has: boolean;
-  }>;
+  rightRef: React.RefObject<{ pos: Vector3; euler: Euler; has: boolean }>;
 }) => {
-  // v6 API: 入力ソース状態を取得
-  // コントローラー/ハンドを両方監視し、手があれば手を優先
   const leftControllerState = useXRInputSourceState("controller", "left");
   const rightControllerState = useXRInputSourceState("controller", "right");
   const leftHandState = useXRInputSourceState("hand", "left");
   const rightHandState = useXRInputSourceState("hand", "right");
+
+  // ハンドトラッキングを優先、なければコントローラー
   const leftState = leftHandState?.inputSource
     ? leftHandState
     : leftControllerState;
@@ -225,12 +173,11 @@ const XRControllersProbe = ({
     ? rightHandState
     : rightControllerState;
 
-  // XRSpace を使って grip/targetRay space の姿勢を Three の Object3D に反映
   const leftSpaceRef = useRef<Object3D>(null);
   const rightSpaceRef = useRef<Object3D>(null);
 
   useFrame(() => {
-    // Left
+    // 左手
     if (leftState?.inputSource && leftSpaceRef.current) {
       const pos = leftSpaceRef.current.getWorldPosition(new Vector3());
       const rot = new Euler().setFromQuaternion(
@@ -244,7 +191,7 @@ const XRControllersProbe = ({
       leftRef.current.has = false;
     }
 
-    // Right
+    // 右手
     if (rightState?.inputSource && rightSpaceRef.current) {
       const pos = rightSpaceRef.current.getWorldPosition(new Vector3());
       const rot = new Euler().setFromQuaternion(
@@ -259,13 +206,11 @@ const XRControllersProbe = ({
     }
   });
 
-  // 手がある場合は wrist 関節の XRJointSpace を優先し、
-  // 無ければ gripSpace、さらに無ければ targetRaySpace を使用
+  // 手関節を取得（ハンドトラッキング時）
   const getHandJoint = (inputSource: XRInputSource | undefined) => {
-    if (!inputSource) return null;
-    // XRHand オブジェクトが存在する場合は hand.get("wrist") を使用
+    if (!inputSource?.hand) return null;
     const hand = inputSource.hand;
-    if (hand && typeof hand.get === "function") {
+    if (typeof hand.get === "function") {
       return hand.get("wrist") || null;
     }
     return null;
@@ -275,6 +220,7 @@ const XRControllersProbe = ({
     getHandJoint(leftState?.inputSource) ??
     leftState?.inputSource?.gripSpace ??
     leftState?.inputSource?.targetRaySpace;
+
   const rightSpace =
     getHandJoint(rightState?.inputSource) ??
     rightState?.inputSource?.gripSpace ??
@@ -282,8 +228,8 @@ const XRControllersProbe = ({
 
   return (
     <>
-      {leftSpace ? <XRSpace ref={leftSpaceRef} space={leftSpace} /> : null}
-      {rightSpace ? <XRSpace ref={rightSpaceRef} space={rightSpace} /> : null}
+      {leftSpace && <XRSpace ref={leftSpaceRef} space={leftSpace} />}
+      {rightSpace && <XRSpace ref={rightSpaceRef} space={rightSpace} />}
     </>
   );
 };
