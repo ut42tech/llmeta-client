@@ -3,7 +3,7 @@
 import { Loader } from "@react-three/drei";
 import { LogIn, LogOut, PersonStanding, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { MainCanvas } from "@/components/main/MainCanvas";
+import { MainCanvas } from "@/components/3d/page/main/MainCanvas";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";

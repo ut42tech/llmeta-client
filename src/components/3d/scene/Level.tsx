@@ -4,7 +4,7 @@ import { BvhPhysicsBody } from "@react-three/viverse";
 import { TeleportTarget } from "@react-three/xr";
 import type { Vector3 } from "three";
 import * as THREE from "three";
-import { SceneMap } from "@/components/scene/SceneMap";
+import { SceneMap } from "@/components/3d/scene/SceneMap";
 
 type MainLevelProps = {
   onTeleport?: (position: Vector3) => void;

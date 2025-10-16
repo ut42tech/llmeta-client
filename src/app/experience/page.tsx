@@ -4,7 +4,7 @@ import { Loader } from "@react-three/drei";
 import { MonitorSmartphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ExperienceCanvas } from "@/components/experience/ExperienceCanvas";
+import { ExperienceCanvas } from "@/components/3d/page/experience/ExperienceCanvas";
 import { useColyseusLifecycle } from "@/hooks/useColyseusLifecycle";
 import { useXrSupport } from "@/hooks/useXrSupport";
 import {

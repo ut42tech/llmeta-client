@@ -5,7 +5,7 @@ import { FontFamilyProvider } from "@react-three/uikit";
 import { BvhPhysicsWorld } from "@react-three/viverse";
 import { createXRStore, XR } from "@react-three/xr";
 import { Suspense, useMemo } from "react";
-import { ExperienceScene } from "@/components/experience/ExperienceScene";
+import { ExperienceScene } from "@/components/3d/page/experience/ExperienceScene";
 
 type Props = {
   mode: "desktop" | "xr";

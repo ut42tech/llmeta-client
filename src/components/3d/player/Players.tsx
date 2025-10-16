@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { RemotePlayer } from "@/components/player/RemotePlayer";
+import { RemotePlayer } from "@/components/3d/player/RemotePlayer";
 import { useRemotePlayerInterpolation } from "@/hooks/useRemotePlayerInterpolation";
 import type { ColyseusPlayerState, RemotePlayerData } from "@/types/player";
 import { useColyseusRoom, useColyseusState } from "@/utils/colyseus";

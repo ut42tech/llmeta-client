@@ -14,9 +14,9 @@ import {
   Player,
   type PlayerHandle,
   type PlayerTransformSnapshot,
-} from "@/components/player/Player";
-import { PlayerTag } from "@/components/player/PlayerTag";
-import { SnapRotateXROrigin } from "@/components/player/SnapRotateXROrigin";
+} from "@/components/3d/player/Player";
+import { PlayerTag } from "@/components/3d/player/PlayerTag";
+import { SnapRotateXROrigin } from "@/components/3d/player/SnapRotateXROrigin";
 import {
   MessageType,
   type MoveData,
